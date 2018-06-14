@@ -7,14 +7,14 @@
 #IncludeRegexTransform: 
 
 /Users/yee/Desktop/monster-sql/MiniSQL/api.cc
+minisql.h
+/Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 api.h
 /Users/yee/Desktop/monster-sql/MiniSQL/api.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/api.h
 config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
-minisql.h
-/Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/buffer.cc
 
@@ -23,6 +23,8 @@ config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/catalog.cc
+catalog.h
+/Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
 config.h
@@ -77,10 +79,10 @@ index.h
 /Users/yee/Desktop/monster-sql/MiniSQL/record.cc
 record.h
 /Users/yee/Desktop/monster-sql/MiniSQL/record.h
+minisql.h
+/Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/record.h
 config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
-minisql.h
-/Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 

@@ -1,7 +1,7 @@
 #ifndef RECORD_H
 #define RECORD_H
 #include "config.h"
-#include "minisql.h"
+
 
 class RecordManager
 {

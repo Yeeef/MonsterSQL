@@ -1,11 +1,14 @@
+#include "minisql.h"
 #include "api.h"
 
-/*
+
 bool API::create_table(const string &table_name, const Attribute & primary, const vector<Attribute> &attributes) const throw(Error)
 {
+    
     #ifdef DEBUG
     cout << "[API::create_table]" << endl;
     #endif
+    
 
     // 获取catalogmanager
     CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
@@ -15,6 +18,7 @@ bool API::create_table(const string &table_name, const Attribute & primary, cons
     try
     {
         catalogmanager.create_table(table_name, attributes);
+        
         recordmanager.create_table(table_name);
         string index_name;
         // 默认的index名 table+primary
@@ -27,15 +31,18 @@ bool API::create_table(const string &table_name, const Attribute & primary, cons
 
         return true;
         
+        
     }
     catch(Error err)
     {
        err.print_error();
        return false;
     }
+    
 
     
 }
+
 
 bool API::drop_table(const string &table_name) const throw(Error)
 {
@@ -89,6 +96,9 @@ bool API::insert(const string &table_name, const vector<string> & insert_data) c
     // 获取 indexmanager
     IndexManager &indexmanager = MiniSQL::get_index_manager();
 
+    // 从catalog获得table
+    
+
     // parse the vector into raw_content
     // interpreter 已经做过catalog检查，所以一定是可以插的数据
     // insert data into record
@@ -117,4 +127,3 @@ bool API::drop_index(const string &index_name) const throw(Error)
 {
     return false;
 }
-*/

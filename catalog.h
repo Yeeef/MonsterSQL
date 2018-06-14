@@ -18,7 +18,7 @@ class CatalogManager
     public:
     CatalogManager(){};
     ~CatalogManager(){};
-    void print(){ cout << "[CatalogManager]" << endl; }
+    void print(){ std::cout << "[CatalogManager]" << std::endl; }
 
     // return true if create succefully, return false if meet some problem
     bool create_table(const string & table_name, const vector <Attribute> & attributes) throw(Error);

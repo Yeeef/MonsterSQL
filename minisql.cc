@@ -4,6 +4,7 @@
 API api_init = API();
 API & MiniSQL::api = api_init;
 
+
 CatalogManager catalog_init = CatalogManager();
 CatalogManager & MiniSQL::catalog_manager = catalog_init;
 
@@ -18,7 +19,8 @@ IndexManager & MiniSQL::index_manager = index_init;
 
 
 
-API & MiniSQL::get_api() { return api; }
+
+
 CatalogManager & MiniSQL::get_catalog_manager() { return catalog_manager; }
 RecordManager & MiniSQL::get_record_manager() { return record_manager; }
 BufferManager & MiniSQL::get_buffer_manager() { return buffer_manager; }

@@ -54,7 +54,7 @@ class Error
 
     public:
     Error(string error_info) : error_info(error_info) {}
-    ~Error();
+    ~Error() {};
 
     void print_error() { cout << error_info << endl; }
     

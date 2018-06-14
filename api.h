@@ -1,17 +1,16 @@
 #ifndef API_H
 #define API_H
 #include "config.h"
-#include "minisql.h"
+
 
 
 
 class API
 {
-    private:
     public:
     API(){};
     ~API(){};
-
+    
     bool create_table(const string & table_name, const Attribute & primary, const vector <Attribute> & attributes) const throw(Error);
     bool drop_table(const string & table_name) const throw(Error);
     bool insert(const string & table_name, const vector <string> & insert_data) const throw(Error);
@@ -23,5 +22,6 @@ class API
     
     
 };
+
 
 #endif

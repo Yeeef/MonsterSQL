@@ -13,6 +13,8 @@ CMakeFiles/monsterSQL.dir/api.cc.o: ../record.h
 CMakeFiles/monsterSQL.dir/buffer.cc.o: ../buffer.cc
 
 CMakeFiles/monsterSQL.dir/catalog.cc.o: ../catalog.cc
+CMakeFiles/monsterSQL.dir/catalog.cc.o: ../catalog.h
+CMakeFiles/monsterSQL.dir/catalog.cc.o: ../config.h
 
 CMakeFiles/monsterSQL.dir/config.cc.o: ../config.cc
 CMakeFiles/monsterSQL.dir/config.cc.o: ../config.h

@@ -6,6 +6,7 @@
 #include "buffer.h"
 #include "index.h"
 
+
 class MiniSQL
 {
     private:
@@ -17,21 +18,18 @@ class MiniSQL
     
 
     public:
-    MiniSQL();
-    ~MiniSQL();
+    MiniSQL(){}
+    ~MiniSQL(){}
 
-    static API & get_api();
+    static API & get_api() {return api;}
     static CatalogManager & get_catalog_manager();
     static RecordManager & get_record_manager();
     static BufferManager & get_buffer_manager();
     static IndexManager & get_index_manager();
 
     
-    
-
-
-    
-
 };
+
+
 
 #endif

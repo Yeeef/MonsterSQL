@@ -2,15 +2,15 @@
 #include "interpreter.h"
 #include <fstream>
 
-// todo: 了解 reinterpret 
+// todo: 了解 reinterpret
 
 int main()
 {
 
-//    Interpreter test;
-  //  test.print();
+    Interpreter test;
+    test.print();
 
-/*
+    /*
     FILE * file = fopen("test.bin", "wb");
     char data[32];
     int * p2;
@@ -25,44 +25,23 @@ int main()
     cout << *p2 << endl;
     */
     fstream file("test", ios::in | ios::out | ios::binary);
-    if(!file.is_open())
+    if (!file.is_open())
     {
         cout << "no" << endl;
     }
-    int * p2;
+    int *p2;
     int a = 520;
     p2 = &a;
     //file.write(reinterpret_cast<char *>(p2), sizeof(int));
-    
+
     char aa[4];
     file.read(aa, sizeof(int));
     p2 = reinterpret_cast<int *>(aa);
-    
-    cout << *p2<<endl;;
+
+    cout << *p2 << endl;
+    ;
     memcpy(p2, aa, sizeof(int));
     cout << *p2 << endl;
-
-
-
-    
-
-
-
-
-
-    
-    
-
-
-
-
-
-    
-
-
-
-
-    
 
     cout << "MonsterSQL👹" << endl;
 }

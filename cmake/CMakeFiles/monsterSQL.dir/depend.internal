@@ -14,6 +14,8 @@ CMakeFiles/monsterSQL.dir/buffer.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/buffer.cc
 CMakeFiles/monsterSQL.dir/catalog.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/catalog.cc
+ /Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/config.h
 CMakeFiles/monsterSQL.dir/config.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/config.cc
  /Users/yee/Desktop/monster-sql/MiniSQL/config.h
