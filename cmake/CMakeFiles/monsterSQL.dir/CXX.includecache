@@ -13,6 +13,8 @@ api.h
 /Users/yee/Desktop/monster-sql/MiniSQL/api.h
 config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
+minisql.h
+/Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/buffer.cc
 
@@ -33,6 +35,8 @@ config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
 iostream
 -
+vector
+-
 
 /Users/yee/Desktop/monster-sql/MiniSQL/index.cc
 
@@ -51,6 +55,8 @@ minisql.h
 /Users/yee/Desktop/monster-sql/MiniSQL/main.cc
 interpreter.h
 /Users/yee/Desktop/monster-sql/MiniSQL/interpreter.h
+fstream
+-
 
 /Users/yee/Desktop/monster-sql/MiniSQL/minisql.cc
 minisql.h
@@ -69,8 +75,12 @@ index.h
 /Users/yee/Desktop/monster-sql/MiniSQL/index.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/record.cc
+record.h
+/Users/yee/Desktop/monster-sql/MiniSQL/record.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/record.h
 config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
+minisql.h
+/Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 

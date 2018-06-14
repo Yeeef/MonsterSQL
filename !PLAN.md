@@ -1,14 +1,67 @@
 # PLAN 🤯
 
-## 结构说明
+## 说明
 
-- 利用 `CMakeLists.txt` 构建
-- 各个文件夹内部为对应的 `.h` `.cpp / .cc`
-- 特别注意 `!cmake` 文件夹，这是我为了使用 `cmake` 生成 `Makefile` 过程不要把相关文件都存进主目录下
-- 不会用 `cmake` 可以上网学习一下，可以跨平台生成 `Makefile`,方便我们之间跨平台(windows <-> Mac OS)交互，不想学完全可以，用 `CLion`，根据我给的 `CMakeLists.txt` 它应该正常编译，如果不行，把错误发群里，我们再讨论
+- 程序框架构建
+  - `interpreter` 作为前端
+  - `minisql` 作为后端
+  - `config.h` 中包含公用类，可以移植到 minisql.h 中
+
+- 大致框架已经写好，API接口暂时这样规定，有问题立即提出
+
+- 如何调用 `API` 等，我在 `interpreter.h` 中内置了一个简单程序，可以看一下
+
+- 注意调用的时候要用 `&` 引用，我们能不用指针则不用指针
+
+
+## minisql 类
+
+```c++
+class MiniSQL
+{
+    private:
+    static API & api;
+    static CatalogManager & catalog_manager;
+    static RecordManager & record_manager;
+    static BufferManager & buffer_manager;
+    static IndexManager & index_manager;
+    
+
+    public:
+    MiniSQL();
+    ~MiniSQL();
+
+    static API & get_api();
+    static CatalogManager & get_catalog_manager();
+    static RecordManager & get_record_manager();
+    static BufferManager & get_buffer_manager();
+    static IndexManager & get_index_manager();
+};
+```
 
 ## API接口
 
+```c++
+class API
+{
+    private:
+    public:
+    API(){};
+    ~API(){};
+
+    bool create_table(const string & table_name, const vector <Attribute> & attributes) const throw(Error);
+    bool drop_table(const string & table_name) const throw(Error);
+    bool insert(const string & table_name, const vector <Attribute> attributes) const throw(Error);
+    bool Delete(const string & table_name, const vector <string> primary) const throw(Error);
+    bool select(const string & table_name, const vector <string> primary) const throw(Error);
+    bool create_index(const string & table_name, const string & attribute_name, 
+                      const string & index_name) const throw(Error);
+    bool drop_index(const string & table_name, const string & attribute_name, 
+                    const string & index_name) const throw(Error);
+    
+    
+};
+```
 ## 一些通用类
 
 - 通用类存在 `Config` 目录下
@@ -27,7 +80,7 @@ class Attribute
     public:
     Attribute(string name, bool isPrimary = false, bool isUnique = false)
     : name(name), isPrimary(isPrimary), isUnique(isUnique) {}
-    ~Attribute();
+    ~Attribute(){};
 
     string get_name() { return name; }
     bool is_primary() { return isPrimary; }
