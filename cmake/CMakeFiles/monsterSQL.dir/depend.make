@@ -19,7 +19,9 @@ CMakeFiles/monsterSQL.dir/catalog.cc.o: ../config.h
 CMakeFiles/monsterSQL.dir/config.cc.o: ../config.cc
 CMakeFiles/monsterSQL.dir/config.cc.o: ../config.h
 
+CMakeFiles/monsterSQL.dir/index.cc.o: ../config.h
 CMakeFiles/monsterSQL.dir/index.cc.o: ../index.cc
+CMakeFiles/monsterSQL.dir/index.cc.o: ../index.h
 
 CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../interpreter.cc
 

@@ -5,6 +5,8 @@
         "iosfwd": "cpp",
         "locale": "cpp",
         "string": "cpp",
-        "iterator": "cpp"
+        "iterator": "cpp",
+        "typeinfo": "cpp",
+        "string_view": "cpp"
     }
 }

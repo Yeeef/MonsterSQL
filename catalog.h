@@ -15,6 +15,8 @@ class IndexCatalog
 class CatalogManager
 {
     private:
+    vector <Table> Table_set;
+    
     public:
     CatalogManager(){};
     ~CatalogManager(){};
@@ -24,6 +26,7 @@ class CatalogManager
     bool create_table(const string & table_name, const vector <Attribute> & attributes) throw(Error);
     bool drop_table(const string & table_name) throw(Error);
     bool get_indices(const string & table_name, vector <string> & indices_name) throw(Error);
+    bool get_table(const string & table_name, Table & table) throw(Error);
 
 };
 

@@ -41,6 +41,8 @@ vector
 -
 
 /Users/yee/Desktop/monster-sql/MiniSQL/index.cc
+index.h
+/Users/yee/Desktop/monster-sql/MiniSQL/index.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/index.h
 config.h
@@ -58,6 +60,8 @@ minisql.h
 interpreter.h
 /Users/yee/Desktop/monster-sql/MiniSQL/interpreter.h
 fstream
+-
+sstream
 -
 
 /Users/yee/Desktop/monster-sql/MiniSQL/minisql.cc

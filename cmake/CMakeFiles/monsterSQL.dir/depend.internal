@@ -20,7 +20,9 @@ CMakeFiles/monsterSQL.dir/config.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/config.cc
  /Users/yee/Desktop/monster-sql/MiniSQL/config.h
 CMakeFiles/monsterSQL.dir/index.cc.o
+ /Users/yee/Desktop/monster-sql/MiniSQL/config.h
  /Users/yee/Desktop/monster-sql/MiniSQL/index.cc
+ /Users/yee/Desktop/monster-sql/MiniSQL/index.h
 CMakeFiles/monsterSQL.dir/interpreter.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/interpreter.cc
 CMakeFiles/monsterSQL.dir/main.cc.o

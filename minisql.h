@@ -21,7 +21,7 @@ class MiniSQL
     MiniSQL(){}
     ~MiniSQL(){}
 
-    static API & get_api() {return api;}
+    static API & get_api();
     static CatalogManager & get_catalog_manager();
     static RecordManager & get_record_manager();
     static BufferManager & get_buffer_manager();
