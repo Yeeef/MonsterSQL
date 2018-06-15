@@ -125,6 +125,7 @@ bool API::insert(const string &table_name, const vector<string> & insert_data, c
         #endif
 
         //我还需要知道插入后的 block_id 以及 record_id
+        // Pointer 就是我要的信息
         ptr Pointer;
         recordmanager.insert(table_name, rawdata, Pointer);
 
@@ -136,27 +137,23 @@ bool API::insert(const string &table_name, const vector<string> & insert_data, c
         // 需要调用catalog来给我index对应的attribute, 在这里我应该用不到index 的metadata
         // 用record metadata 足够了，我需要知道对应的index对应的type
         // 这里不妨通过table 的 attribute_set来做
+
+        // 或者实现一个index类来做
         vector <Attribute> attributes = table.get_attribute_set();
         for(int i = 0; i < attributes.size(); i++)
         {
             if(attributes.at(i).is_index() == true)
             {
-            
                 indexmanager.insert(attributes.at(i).get_index_name(), raw_Vec.at(i), attributes.at(i).get_type(), Pointer);
             }
         }
 
-        
-        //indexmanager.insert();
 
-
-
-
-        for(auto raw : raw_data)
+        for(auto raw : raw_Vec)
         {
             delete [] raw;
         }
-        delete [] data;
+        delete [] rawdata;
         return true;
     }
     catch(Error err)
@@ -170,19 +167,17 @@ bool API::insert(const string &table_name, const vector<string> & insert_data, c
     // parse the vector into raw_content
     // interpreter 已经做过catalog检查，所以一定是可以插的数据
     // insert data into record
-   
-
-
-
     
     return false;
 }
 
-bool API::Delete(const string &table_name, const vector<string> primary) const throw(Error)
+bool API::Delete(const string &table_name, const vector<string> &attribute_name,
+                const vector<int> &condition, const vector<string> &operand) const throw(Error)
 {
     return false;
 }
-bool API::select(const string &table_name, const vector<string> primary) const throw(Error)
+bool API::select(const string &table_name, const vector<string> &attribute_name,
+                const vector<int> &condition, const vector<string> &operand) const throw(Error)
 {
     return false;
 }

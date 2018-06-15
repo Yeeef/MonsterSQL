@@ -5,8 +5,10 @@
 
 // todo: 了解 reinterpret
 
+
 int main()
 {
+
 
     Interpreter test;
     test.print();
@@ -94,7 +96,7 @@ int main()
             int temp;
             stream >> temp;
             char *temp_data = new char[INT_LENGTH];
-            memcpy(temp_data, reinterpret_cast<char *>(&temp), INT_LENGTH);
+            memcpy(temp_data, (&temp), INT_LENGTH);
             raw_Vec.at(i) = temp_data;
             break;
         }
@@ -103,7 +105,7 @@ int main()
             float temp;
             stream >> temp;
             char *temp_data = new char[FLOAT_LENGTH];
-            memcpy(temp_data, reinterpret_cast<char *>(&temp), INT_LENGTH);
+            memcpy(temp_data, (&temp), INT_LENGTH);
             raw_Vec.at(i) = temp_data;
 
             break;
@@ -113,7 +115,6 @@ int main()
 
             char * temp_data = new char[CHAR_LENGTH];
             stream >> temp_data;
-            
             raw_Vec.at(i) = temp_data;
             break;
         }

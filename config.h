@@ -3,6 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <map>
+#include <unordered_map>
 #define DEBUG -1
 
 #define BLOCK_SIZE 4096
@@ -15,6 +17,13 @@
 #define TYPE_CHAR 1
 #define TYPE_INT 2
 #define TYPE_FLOAT 3
+
+#define COND_EQ 0
+#define COND_NE 1
+#define COND_LT 2
+#define COND_GT 3
+#define COND_LE 4
+#define COND_GE 5
 
 using namespace std;
 
@@ -30,9 +39,6 @@ class Attribute
     char type;
     // the length of the Attribute
     int length;
-
-    // 这个就不一定有了
-    char * rawcontent;
 
     bool isPrimary;
     bool isUnique;
@@ -51,6 +57,7 @@ class Attribute
     bool is_primary() { return isPrimary; }
     bool is_unique() { return isUnique; }
     bool is_index() const {return isIndex;}
+
 
 };
 
@@ -144,6 +151,9 @@ class Method
     public:
     static void vec2rawdata(const vector <char *> & raw_vec );
     static void string2rawdata(const string & str, const int type, char * rawdata);
+    static int rawdata2int(const char * rawdata);
+    static float rawdata2float(const char * rawdata);
+
 };
 
 class ptr
@@ -170,24 +180,11 @@ class ptr
     short get_record_id() const { return record_id; }
     char * get_rawdata() const { return rawdata;}
 
-
-
-    
-
 };
 
-class Data
+class BlockManager
 {
     
-    char * content;
-    int length;
-
-    public:
-    Data(char * content = nullptr, int length = 0) : content(content), length(length)
-    {
-
-    }
 };
-
 
 #endif

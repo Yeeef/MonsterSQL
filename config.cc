@@ -81,3 +81,18 @@ void Method::string2rawdata(const string &str, const int type, char *rawdata)
     }
     }
 }
+
+int Method::rawdata2int(const char * rawdata)
+{
+    int realdata;
+    memcpy(&realdata, (rawdata), INT_LENGTH);
+    return realdata;
+
+
+}
+float Method::rawdata2float(const char * rawdata)
+{
+    float realdata;
+    memcpy(&realdata, (rawdata), INT_LENGTH);
+    return realdata;
+}

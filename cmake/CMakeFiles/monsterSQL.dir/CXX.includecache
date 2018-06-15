@@ -25,6 +25,8 @@ config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/catalog.cc
 catalog.h
 /Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
+unordered_set
+-
 
 /Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
 config.h
@@ -38,6 +40,12 @@ config.h
 iostream
 -
 vector
+-
+sstream
+-
+map
+-
+unordered_map
 -
 
 /Users/yee/Desktop/monster-sql/MiniSQL/index.cc
