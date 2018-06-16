@@ -6,6 +6,7 @@ CatalogManager::CatalogManager()
 {   
     // 从文件读信息填充我的table-set
     
+    
 
 }
 bool CatalogManager::create_table(const string &table_name, const vector<Attribute> &attributes) throw(Error)

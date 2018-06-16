@@ -78,46 +78,46 @@ class Block
 {
     // which file
     string filename;
-    // a pointer / an address
+    // a pointer / an address in a file
     int block_id;
-    // a record length
-    int record_length;
-    // free_list_header, point to the first deleted record
-    short free_list_header;
-    // attention: free_list_header occupies first 2 bytes in a block
 
     // 最后一条记录的id，为了计算下一个record应该插在哪里
-    short last_record_id;
+    //short last_record_id;
 
-    bool full;
+    //bool full;
     bool dirty;
     bool pin;
 
-    char content[BLOCK_SIZE];
+    char * content;
 
     public:
     // Constructor
-    Block(const string & filename, int block_id, int record_length)
-    : filename(filename), block_id(block_id), record_length(record_length)
+    Block(const string & filename, int block_id, char * content)
+    : filename(filename), block_id(block_id), content(content)
     {
-        // point to itself
-        free_list_header = 0;
-        // record_length is 0
-        record_length = 0;
         dirty = false;
         pin = false;
     }
+    ~Block()
+    {
+        delete [] content;
+    }
     void set_filename(const string & filename) { this->filename = filename; }
     void set_block_id(const int block_id) { this->block_id = block_id; }
-    void set_record_length( const int record_length) { this->record_length = record_length; }
-    void set_free_list_header(const int header) { this->free_list_header = header; }
+   // void set_record_length( const int record_length) { this->record_length = record_length; }
+    //void set_free_list_header(const int header) { this->free_list_header = header; }
     void set_dirty(bool status) { this->dirty = status; }
-    void set_full(bool status) {this->full = status; }
+    //void set_full(bool status) {this->full = status; }
     void set_pin(bool status) { this->pin = status; }
     void set_content(const char * content)
     {
         memcpy(this->content, content, BLOCK_SIZE);
     }
+    char* getContent() { return content; }
+    string get_filename() {return filename; }
+    bool isDirty() { return dirty; }
+    int get_blockID() { return block_id; }
+
 
 
 };
@@ -188,11 +188,12 @@ class FileManager
 {
     private:
     Block * block; // 具体这个file的block
-    int block_count;
-    int record_length;
-    int first_free_record_id; //绝对地址
-    int record_count;
+    int block_count; // 可以算出来
+    int record_length; // 读出来的
+    int first_free_record_id; //绝对地址，读出来的
+    int record_count; // 读出来的
     int record_count_perblock;
+    
     ptr free_pointer; // current_pointer
 
 

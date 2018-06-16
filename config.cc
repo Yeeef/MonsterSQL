@@ -117,5 +117,7 @@ FileManager::FileManager(const string &file_name)
 {
     //向buffer manager请求 文件名的 第一个block
     BufferManager buffermanager = MiniSQL::get_buffer_manager();
+    // 0th block 存储 file metadata
+    buffermanager.getBlock(file_name, 0);
     //buffermanager.get_block();
 }

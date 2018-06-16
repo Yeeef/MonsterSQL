@@ -7,6 +7,10 @@
         "string": "cpp",
         "iterator": "cpp",
         "typeinfo": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "stdexcept": "cpp",
+        "__locale": "cpp",
+        "__config": "cpp",
+        "__nullptr": "cpp"
     }
 }
