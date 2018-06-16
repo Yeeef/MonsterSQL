@@ -6,8 +6,10 @@
 // todo: 了解 reinterpret
 
 
+
 int main()
 {
+
 
 
     Interpreter test;
@@ -70,12 +72,10 @@ int main()
     cout << *p1 << endl;
     cout << *p2 << endl;
 
-    ptr Pointer(4, 23);
+    ptr Pointer(4);
     memcpy(p1, Pointer.get_rawdata(), 4);
-    memcpy(p2, Pointer.get_rawdata() + 4, 2);
 
     cout << *p1 << endl;
-    cout << *p2 << endl;
 
     delete p2;
     delete p1;

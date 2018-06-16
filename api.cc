@@ -18,7 +18,7 @@ bool API::create_table(const string &table_name, const Attribute & primary, cons
     try
     {
         catalogmanager.create_table(table_name, attributes);
-        
+
         recordmanager.create_table(table_name);
         string index_name;
         // 默认的index名 table+primary
@@ -63,7 +63,7 @@ bool API::drop_table(const string &table_name) const throw(Error)
         // drop all indices related to table
         for(auto index : indices_name)
         {
-            drop_index(index);
+            drop_index(table_name, index);
         }
         catalogmanager.drop_table(table_name);
         recordmanager.drop_table(table_name);
@@ -124,7 +124,7 @@ bool API::insert(const string &table_name, const vector<string> & insert_data, c
         cout << "[API::insert]: parse data successfully"<<endl;
         #endif
 
-        //我还需要知道插入后的 block_id 以及 record_id
+        //我还需要知道插入后的 record_id
         // Pointer 就是我要的信息
         ptr Pointer;
         recordmanager.insert(table_name, rawdata, Pointer);
@@ -186,7 +186,7 @@ bool API::create_index(const string &table_name, const string &attribute_name,
 {
     return false;
 }
-bool API::drop_index(const string &index_name) const throw(Error)
+bool API::drop_index(const string &index_name, const string & table_name) const throw(Error)
 {
     return false;
 }

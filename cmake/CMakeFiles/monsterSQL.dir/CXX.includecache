@@ -17,10 +17,14 @@ config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/buffer.cc
+buffer.h
+/Users/yee/Desktop/monster-sql/MiniSQL/buffer.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/buffer.h
 config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
+unordered_map
+-
 
 /Users/yee/Desktop/monster-sql/MiniSQL/catalog.cc
 catalog.h
@@ -35,6 +39,8 @@ config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.cc
 config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
+minisql.h
+/Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
 iostream

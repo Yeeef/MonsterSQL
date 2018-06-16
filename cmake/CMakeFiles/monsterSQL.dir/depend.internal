@@ -12,13 +12,21 @@ CMakeFiles/monsterSQL.dir/api.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/record.h
 CMakeFiles/monsterSQL.dir/buffer.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/buffer.cc
+ /Users/yee/Desktop/monster-sql/MiniSQL/buffer.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/config.h
 CMakeFiles/monsterSQL.dir/catalog.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/catalog.cc
  /Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
  /Users/yee/Desktop/monster-sql/MiniSQL/config.h
 CMakeFiles/monsterSQL.dir/config.cc.o
+ /Users/yee/Desktop/monster-sql/MiniSQL/api.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/buffer.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
  /Users/yee/Desktop/monster-sql/MiniSQL/config.cc
  /Users/yee/Desktop/monster-sql/MiniSQL/config.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/index.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/record.h
 CMakeFiles/monsterSQL.dir/index.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/config.h
  /Users/yee/Desktop/monster-sql/MiniSQL/index.cc

@@ -1,5 +1,8 @@
 #include "config.h"
+#include "minisql.h"
 
+/* ---------------------------------------------*/
+/* Table */
 bool Table::isValidInput(const vector<string> &insert_data, const vector<int> &type, vector<char *> &raw_Vec) throw(Error)
 {
     // 输入的格式检查,暂时不允许null的存在
@@ -20,11 +23,10 @@ bool Table::isValidInput(const vector<string> &insert_data, const vector<int> &t
             throw err;
             return false;
         }
-        char * rawdata;
+        char *rawdata;
         Method::string2rawdata(insert_data.at(i), type.at(i), rawdata);
         // 翻译好的数据加入 raw_vec
         raw_Vec.push_back(rawdata);
-
     }
     return true;
 }
@@ -46,8 +48,11 @@ bool Table::rawVec2rawData(const vector<char *> &raw_Vec, char *raw_data) throw(
 
     return true;
 }
+/* ---------------------------------------------*/
 
+/* ---------------------------------------------*/
 /* Method */
+
 // convert a string to the raw data with given type
 void Method::string2rawdata(const string &str, const int type, char *rawdata)
 {
@@ -60,7 +65,7 @@ void Method::string2rawdata(const string &str, const int type, char *rawdata)
     {
         int temp;
         ss >> temp;
-        rawdata = new char [INT_LENGTH];
+        rawdata = new char[INT_LENGTH];
         memcpy(rawdata, reinterpret_cast<char *>(&temp), INT_LENGTH);
         break;
     }
@@ -68,13 +73,13 @@ void Method::string2rawdata(const string &str, const int type, char *rawdata)
     {
         double temp;
         ss >> temp;
-        rawdata = new char [FLOAT_LENGTH];
+        rawdata = new char[FLOAT_LENGTH];
         memcpy(rawdata, reinterpret_cast<char *>(&temp), FLOAT_LENGTH);
         break;
     }
     case TYPE_CHAR:
     {
-        rawdata = new char [CHAR_LENGTH];
+        rawdata = new char[CHAR_LENGTH];
         ss >> rawdata;
 
         break;
@@ -82,17 +87,35 @@ void Method::string2rawdata(const string &str, const int type, char *rawdata)
     }
 }
 
-int Method::rawdata2int(const char * rawdata)
+int Method::rawdata2int(const char *rawdata)
 {
     int realdata;
     memcpy(&realdata, (rawdata), INT_LENGTH);
     return realdata;
-
-
 }
-float Method::rawdata2float(const char * rawdata)
+float Method::rawdata2float(const char *rawdata)
 {
     float realdata;
     memcpy(&realdata, (rawdata), INT_LENGTH);
     return realdata;
+}
+
+void Method::int2rawdata(const int data, char * rawdata)
+{  
+    memcpy(rawdata, (&data), INT_LENGTH);
+}
+void Method::float2rawdata(const float data, char * rawdata)
+{
+    memcpy(rawdata, (&data), FLOAT_LENGTH);
+}
+
+/* ---------------------------------------------*/
+
+/* ---------------------------------------------*/
+/* FileManager */
+FileManager::FileManager(const string &file_name)
+{
+    //向buffer manager请求 文件名的 第一个block
+    BufferManager buffermanager = MiniSQL::get_buffer_manager();
+    //buffermanager.get_block();
 }

@@ -4,6 +4,7 @@
 
 CatalogManager::CatalogManager()
 {   
+    // 从文件读信息填充我的table-set
     
 
 }

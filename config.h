@@ -153,37 +153,51 @@ class Method
     static void string2rawdata(const string & str, const int type, char * rawdata);
     static int rawdata2int(const char * rawdata);
     static float rawdata2float(const char * rawdata);
+    static void int2rawdata(const int data, char * rawdata);
+    static void float2rawdata(const float data, char * rawdata);
 
 };
 
+// now especially for the B+ tree
+// record_id采用绝对地址没有问题，因为record一般不会移动
 class ptr
 {
     
-    int block_id;
-    short record_id;
+    int id; // it can be a block_id(internal node) or a record_id(leaf)
     char * rawdata;
 
 
     public:
-    ptr(int block_id = 0, short record_id = 0) : block_id(block_id), record_id(record_id)
+    ptr(int id = 0) : id(id)
     {
-        rawdata = new char[6];
-        memcpy(rawdata, reinterpret_cast<char*>(&block_id), sizeof(int));
-        memcpy(rawdata+4, reinterpret_cast<char*>(&record_id), sizeof(short));
+        rawdata = new char[4];
+        memcpy(rawdata, reinterpret_cast<char*>(id), INT_LENGTH);
     }
     ~ptr()
     {
         delete [] rawdata;
     }
 
-    int get_block_id() const { return block_id; }
-    short get_record_id() const { return record_id; }
+    int get_id() const { return id; }
     char * get_rawdata() const { return rawdata;}
 
 };
 
-class BlockManager
+// 每个file都有fileheader存储metadata, 所以我必须把这些信息读出来
+class FileManager
 {
+    private:
+    Block * block; // 具体这个file的block
+    int block_count;
+    int record_length;
+    int first_free_record_id; //绝对地址
+    int record_count;
+    int record_count_perblock;
+    ptr free_pointer; // current_pointer
+
+
+    public:
+    FileManager(const string & file_name);
     
 };
 

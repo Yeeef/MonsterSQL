@@ -17,7 +17,7 @@ class API
                 const vector<int> &condition, const vector<string> &operand) const throw(Error);
     bool create_index(const string &table_name, const string &attribute_name,
                       const string &index_name) const throw(Error);
-    bool drop_index(const string &index_name) const throw(Error);
+    bool drop_index(const string &index_name, const string & table_name) const throw(Error);
 };
 
 #endif
