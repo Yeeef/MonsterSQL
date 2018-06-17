@@ -123,10 +123,7 @@ const char * Method::float2rawdata(float * data)
 {
     return reinterpret_cast<char *>(data);
 }
-const int Method::recordID2Addr(const int record_id, const int record_length)
-{
-    return record_id * record_length;
-}
+
 const int Method::getLengthFromType(int type)
 {
     

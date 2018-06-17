@@ -178,7 +178,6 @@ class Method
     // 下面两个函数格外注意，返回的指针就是原来的指针
     static const char * int2rawdata(int * data);
     static const char * float2rawdata(float * data);
-    static const int recordID2Addr(const int record_id, const int record_length);
     static const int getLengthFromType(int type);
     static void createFile(string file_name);
     static string AbsolutePath(string & file_name);

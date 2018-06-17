@@ -6,6 +6,8 @@
 /* TODO
  * Block_count到底是否需要？
  * record_count是否需要？能否用last_record_id来代替
+ * 必须用record_Addr!否则会出现无法对齐的情况
+ * FileManager保存一个block有啥意义？
  */
 
 // BufferManager又封了一层
@@ -17,17 +19,26 @@ class FileManager
     Block * block; // 具体这个file的block, 这里的block由buffer集中delete不用file来管
     int block_count; // 可以算出来
     int record_length; // 读出来的
-    int first_free_record_id; //绝对地址，读出来的
+    int first_free_record_addr; //绝对地址，读出来的
     int record_count; // 读出来的
     int record_count_perblock; //可以算出来
     
     ptr current_pointer; // current_pointer
+    int AddByCount(const char * rawdata);
+    int AddByFreeList(const char * rawdata);
+    void updataMeta();
+
+
+
 
 
     public:
     FileManager(string  file_name);
     
-    const char * get_record(const int record_id) const;
+    const char * get_record(const int record_addr) const throw(Error);
+    const int add_record(const char * rawdata) throw(Error);
+    
+
     
 };
 #endif
