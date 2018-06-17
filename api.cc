@@ -11,9 +11,9 @@ bool API::create_table(const string &table_name, const Attribute & primary, cons
     
 
     // 获取catalogmanager
-    CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
+    CatalogManager & catalogmanager = MiniSQL::get_catalog_manager();
     // 获取recordmanager
-    RecordManager &recordmanager = MiniSQL::get_record_manager();
+    RecordManager & recordmanager = MiniSQL::get_record_manager();
 
     try
     {
@@ -139,6 +139,7 @@ bool API::insert(const string &table_name, const vector<string> & insert_data, c
         // 这里不妨通过table 的 attribute_set来做
 
         // 或者实现一个index类来做
+        // 通过table的map可以实现
         vector <Attribute> attributes = table.get_attribute_set();
         for(int i = 0; i < attributes.size(); i++)
         {

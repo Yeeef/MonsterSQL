@@ -6,6 +6,7 @@
 #include <map>
 #include <unordered_map>
 #define DEBUG -1
+#define PATH "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/"
 
 #define BLOCK_SIZE 4096
 #define MAX_TABLE_NAME 32
@@ -14,9 +15,9 @@
 #define FLOAT_LENGTH sizeof(float)
 #define CHAR_LENGTH 255
 #define TYPE_NULL 0
-#define TYPE_CHAR 1
-#define TYPE_INT 2
-#define TYPE_FLOAT 3
+#define TYPE_CHAR 255
+#define TYPE_INT 256
+#define TYPE_FLOAT 257
 
 #define COND_EQ 0
 #define COND_NE 1
@@ -36,7 +37,7 @@ class Attribute
     // index_name if there is any
     string index_name;
     // which type is the Attribute
-    char type;
+    int type;
     // the length of the Attribute
     int length;
 
@@ -98,6 +99,7 @@ class Block
         dirty = false;
         pin = false;
     }
+    
     ~Block()
     {
         delete [] content;
@@ -117,29 +119,48 @@ class Block
     string get_filename() {return filename; }
     bool isDirty() { return dirty; }
     int get_blockID() { return block_id; }
+    void print_info()
+    {
+        cout << "fileName: '" << filename << "' ";
+        cout << "block_id: '" << block_id << "' ";
+        cout << "status: dirty: " << dirty << endl;
+    }
 
 
 
 };
 
 // read from metafile
+/* TODO
+ * 有了Name2Attri的映射以后，是不是Attri2Index, UniqueAttri都可以暂时丢弃？
+ * Attri2Index不能丢弃，因为它可以直接让我知道谁有index
+ * UniqueAttri暂时也留着把
+ * 
+ */
 class Table
 {
     private:
     string table_name;
     int record_length;
     int attribute_count;
-    vector <Attribute> attribute_set;
-    vector <string> indices_name;
+    unordered_map <string, Attribute> Name2Attri; //名字索引到属性
+    unordered_map <string, string> Attri2Index;
+    unordered_map <string, bool> isUnique;
+    string primary_name; 
 
     public:
     Table(string table_name, int record_length, int attribute_count)
     : table_name(table_name), record_length(record_length), attribute_count(attribute_count){ }
+
+    // 专门为metadata准备的
+    Table(string & table_name, int attribute_count) 
+    : table_name(table_name), attribute_count(attribute_count) { }
+
     string get_table_name() {return table_name;};
     int get_record_length() { return record_length; }
     int get_attribute_count() {return attribute_count; }
-    vector <Attribute> & get_attribute_set() { return attribute_set; }
-    vector <string> & get_indices_name() { return indices_name; }
+    //vector <Attribute> & get_attribute_set() { return attribute_set; }
+    //vector <string> & get_indices_name() { return indices_name; }
 
     bool isValidInput(const vector <string> & insert_data, const vector <int> & type, vector <char*> & raw_data) throw(Error);
     bool rawVec2rawData(const vector <char*> & raw_Vec, char * raw_data) throw(Error);
@@ -150,16 +171,23 @@ class Method
 {
     public:
     static void vec2rawdata(const vector <char *> & raw_vec );
-    static void string2rawdata(const string & str, const int type, char * rawdata);
+    //这个函数内部有new
+    static char * string2rawdata(const string & str, const int type);
     static int rawdata2int(const char * rawdata);
     static float rawdata2float(const char * rawdata);
-    static void int2rawdata(const int data, char * rawdata);
-    static void float2rawdata(const float data, char * rawdata);
+    // 下面两个函数格外注意，返回的指针就是原来的指针
+    static const char * int2rawdata(int * data);
+    static const char * float2rawdata(float * data);
+    static const int recordID2Addr(const int record_id, const int record_length);
+    static const int getLengthFromType(int type);
+    static void createFile(string file_name);
+    static string AbsolutePath(string & file_name);
 
 };
 
 // now especially for the B+ tree
 // record_id采用绝对地址没有问题，因为record一般不会移动
+// 注意 record_id * length才是绝对的地址，为何不直接作为绝对呢？
 class ptr
 {
     
@@ -171,7 +199,7 @@ class ptr
     ptr(int id = 0) : id(id)
     {
         rawdata = new char[4];
-        memcpy(rawdata, reinterpret_cast<char*>(id), INT_LENGTH);
+        memcpy(rawdata, reinterpret_cast<char*>(&id), INT_LENGTH);
     }
     ~ptr()
     {
@@ -184,21 +212,30 @@ class ptr
 };
 
 // 每个file都有fileheader存储metadata, 所以我必须把这些信息读出来
+/* TODO
+ * Block_count到底是否需要？
+ * record_count是否需要？能否用last_record_id来代替
+ */
+
+// BufferManager又封了一层
 class FileManager
 {
     private:
-    Block * block; // 具体这个file的block
+    string file_name;
+    Block * block; // 具体这个file的block, 这里的block由buffer集中delete不用file来管
     int block_count; // 可以算出来
     int record_length; // 读出来的
     int first_free_record_id; //绝对地址，读出来的
     int record_count; // 读出来的
-    int record_count_perblock;
+    int record_count_perblock; //可以算出来
     
-    ptr free_pointer; // current_pointer
+    ptr current_pointer; // current_pointer
 
 
     public:
-    FileManager(const string & file_name);
+    FileManager(string  file_name);
+    
+    const char * get_record(const int record_id) const;
     
 };
 

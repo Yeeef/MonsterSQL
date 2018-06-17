@@ -54,6 +54,14 @@ map
 unordered_map
 -
 
+/Users/yee/Desktop/monster-sql/MiniSQL/file.cc
+file.h
+/Users/yee/Desktop/monster-sql/MiniSQL/file.h
+
+/Users/yee/Desktop/monster-sql/MiniSQL/file.h
+config.h
+/Users/yee/Desktop/monster-sql/MiniSQL/config.h
+
 /Users/yee/Desktop/monster-sql/MiniSQL/index.cc
 index.h
 /Users/yee/Desktop/monster-sql/MiniSQL/index.h
@@ -77,10 +85,14 @@ fstream
 -
 sstream
 -
+iostream
+-
 
 /Users/yee/Desktop/monster-sql/MiniSQL/minisql.cc
 minisql.h
 /Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
+config.h
+/Users/yee/Desktop/monster-sql/MiniSQL/config.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 api.h

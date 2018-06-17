@@ -2,6 +2,8 @@
 #include "interpreter.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
+using namespace std;
 
 // todo: 了解 reinterpret
 
@@ -11,9 +13,15 @@ int main()
 {
 
 
+try
+{
 
-    Interpreter test;
-    test.print();
+}catch(Error err)
+{
+    
+}
+    //Interpreter test;
+    //test.print();
 
     /*
     FILE * file = fopen("test.bin", "wb");
@@ -52,88 +60,17 @@ int main()
 
     cout << "MonsterSQL👹" << endl;
 
-    int block_id = 4;
-    short record_id = 2;
-    char data[6];
-    memcpy(data, reinterpret_cast<char *>(&block_id), sizeof(int));
-    memcpy(data + 4, reinterpret_cast<char *>(&record_id), sizeof(short));
-    int *p1 = new int;
-    short *p2 = new short;
-    memcpy(p1, data, 4);
-    memcpy(p2, data + 4, 2);
-    cout << *p1 << endl;
-    cout << *p2 << endl;
-
-    // copy to string is not ok!
-    string data_str(data);
-    const char *dataa = data_str.c_str();
-    memcpy(p1, dataa, 4);
-    memcpy(p2, dataa + 4, 2);
-    cout << *p1 << endl;
-    cout << *p2 << endl;
-
+    
+    int * p1 = new int;
     ptr Pointer(4);
     memcpy(p1, Pointer.get_rawdata(), 4);
 
     cout << *p1 << endl;
-
-    delete p2;
     delete p1;
+    
 
-    vector<string> insert_data = {"1", "2.2", "1"};
-    vector<char *> raw_Vec(3);
-    vector<int> type = {TYPE_INT, TYPE_FLOAT, TYPE_CHAR};
-    vector<int> length = {sizeof(int), sizeof(int), 255};
 
-    for (int i = 0; i < 3; i++)
-    {
-        stringstream stream;
-        stream << insert_data.at(i);
-        switch (type.at(i))
-        {
-        case TYPE_INT:
-        {
-            int temp;
-            stream >> temp;
-            char *temp_data = new char[INT_LENGTH];
-            memcpy(temp_data, (&temp), INT_LENGTH);
-            raw_Vec.at(i) = temp_data;
-            break;
-        }
-        case TYPE_FLOAT:
-        {
-            float temp;
-            stream >> temp;
-            char *temp_data = new char[FLOAT_LENGTH];
-            memcpy(temp_data, (&temp), INT_LENGTH);
-            raw_Vec.at(i) = temp_data;
 
-            break;
-        }
-        case TYPE_CHAR:
-        {
-
-            char * temp_data = new char[CHAR_LENGTH];
-            stream >> temp_data;
-            raw_Vec.at(i) = temp_data;
-            break;
-        }
-            
-        }
-    }
-    int * p3 = new int;
-    p3 = reinterpret_cast<int *>(raw_Vec.at(0));
-    float * p4 = new float;
-    p4 = reinterpret_cast<float*>(raw_Vec.at(1));
-    char * p5 = new char[255];
-    p5 = reinterpret_cast<char*>(raw_Vec.at(2));
-    cout << *p3 << endl;
-    cout << *p4 << endl;
-    cout << *p5 << endl;
-    delete p3;
-    delete p4;
-    delete [] p5;
-        
 
 
     return 0;

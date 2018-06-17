@@ -23,8 +23,9 @@ bool Table::isValidInput(const vector<string> &insert_data, const vector<int> &t
             throw err;
             return false;
         }
+       
         char *rawdata;
-        Method::string2rawdata(insert_data.at(i), type.at(i), rawdata);
+        rawdata = Method::string2rawdata(insert_data.at(i), type.at(i));
         // 翻译好的数据加入 raw_vec
         raw_Vec.push_back(rawdata);
     }
@@ -54,7 +55,7 @@ bool Table::rawVec2rawData(const vector<char *> &raw_Vec, char *raw_data) throw(
 /* Method */
 
 // convert a string to the raw data with given type
-void Method::string2rawdata(const string &str, const int type, char *rawdata)
+char * Method::string2rawdata(const string &str, const int type)
 {
     stringstream ss;
     ss << str;
@@ -65,23 +66,28 @@ void Method::string2rawdata(const string &str, const int type, char *rawdata)
     {
         int temp;
         ss >> temp;
-        rawdata = new char[INT_LENGTH];
+        auto rawdata = new char[INT_LENGTH];
         memcpy(rawdata, reinterpret_cast<char *>(&temp), INT_LENGTH);
+        return rawdata;
         break;
     }
     case TYPE_FLOAT:
     {
-        double temp;
+        float temp;
         ss >> temp;
-        rawdata = new char[FLOAT_LENGTH];
-        memcpy(rawdata, reinterpret_cast<char *>(&temp), FLOAT_LENGTH);
+        char *rawdata = new char[4];
+        memcpy(rawdata, (&temp), FLOAT_LENGTH);
+        return rawdata;
         break;
     }
-    case TYPE_CHAR:
+    default:
     {
-        rawdata = new char[CHAR_LENGTH];
+        //actually it's type_char
+        // type_char的大小就代表了长度！
+        int length = Method::getLengthFromType(type);
+        auto rawdata = new char[length]; 
         ss >> rawdata;
-
+        return rawdata;
         break;
     }
     }
@@ -100,24 +106,109 @@ float Method::rawdata2float(const char *rawdata)
     return realdata;
 }
 
-void Method::int2rawdata(const int data, char * rawdata)
+const char * Method::int2rawdata(int * data)
 {  
-    memcpy(rawdata, (&data), INT_LENGTH);
+    
+    return reinterpret_cast<char *>(data); 
 }
-void Method::float2rawdata(const float data, char * rawdata)
+const char * Method::float2rawdata(float * data)
 {
-    memcpy(rawdata, (&data), FLOAT_LENGTH);
+    return reinterpret_cast<char *>(data);
+}
+const int Method::recordID2Addr(const int record_id, const int record_length)
+{
+    return record_id * record_length;
+}
+const int Method::getLengthFromType(int type)
+{
+    
+    switch (type)
+    {
+        case TYPE_INT:
+            return sizeof(int);
+            break;
+        case TYPE_FLOAT:
+            return sizeof(float);
+            break;   
+        default:
+            return type;
+            break;
+    }
+}
+
+void Method::createFile(string file_name)
+{
+    FILE * file = fopen(file_name.c_str(), "wb");
+    if(file == nullptr)
+    {
+        cout << "[Method::createFile] cannot open file '"<< file_name << "' " << endl;
+        return;
+    }
+    int record_length = 0;
+    int first_free_record_id = -1; 
+    int record_count = 1;
+    fwrite(&record_length, 4, 1, file);
+    fwrite(&first_free_record_id, 4, 1, file);
+    fwrite(&record_count, 4, 1, file);
+    fclose(file); 
+
+}
+
+string Method::AbsolutePath(string & file_name)
+{
+    return PATH +file_name;
 }
 
 /* ---------------------------------------------*/
 
 /* ---------------------------------------------*/
 /* FileManager */
-FileManager::FileManager(const string &file_name)
+FileManager::FileManager(string file_name)
 {
+
+    
+    this->file_name = file_name;
     //向buffer manager请求 文件名的 第一个block
+    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+    // 0th block 存储 file metadata: record_length, first, record_count
+    Block * meta_block = buffermanager.getBlock(file_name, 0);
+     
+    char * content = meta_block->getContent();
+
+    // record_length record_count first_free_id(absolute)
+    record_length = Method::rawdata2int(content);
+    first_free_record_id = Method::rawdata2int(content + INT_LENGTH);
+    
+    // 这个不一定要
+    record_count = Method::rawdata2int(content + 2*INT_LENGTH);
+    
+    
+
+    
+    // 计算 blockcount？, record_perblock
+    record_count_perblock = BLOCK_SIZE / record_length;
+
+    #ifdef DEBUG
+    cout << "[FileManager::FileManager] construct with '" << file_name << "'" << endl;
+    #endif
+    
+   
+}
+
+// const修饰，保证我的指针不会被改变
+const char * FileManager::get_record(const int record_id) const
+{
+    int record_addr = Method::recordID2Addr(record_id, record_length);
+    // 计算block_id
     BufferManager buffermanager = MiniSQL::get_buffer_manager();
-    // 0th block 存储 file metadata
-    buffermanager.getBlock(file_name, 0);
-    //buffermanager.get_block();
+    
+    int block_id = record_addr / BLOCK_SIZE;
+    //就是实际的偏移地址
+    int posInBlock = record_addr - (block_id * BLOCK_SIZE);
+    Block * block = buffermanager.getBlock(file_name, block_id);
+
+    // 读出所需的record
+    return block->getContent() + posInBlock;
+    
+
 }

@@ -27,6 +27,10 @@ CMakeFiles/monsterSQL.dir/config.cc.o: ../index.h
 CMakeFiles/monsterSQL.dir/config.cc.o: ../minisql.h
 CMakeFiles/monsterSQL.dir/config.cc.o: ../record.h
 
+CMakeFiles/monsterSQL.dir/file.cc.o: ../config.h
+CMakeFiles/monsterSQL.dir/file.cc.o: ../file.cc
+CMakeFiles/monsterSQL.dir/file.cc.o: ../file.h
+
 CMakeFiles/monsterSQL.dir/index.cc.o: ../config.h
 CMakeFiles/monsterSQL.dir/index.cc.o: ../index.cc
 CMakeFiles/monsterSQL.dir/index.cc.o: ../index.h

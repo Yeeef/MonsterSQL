@@ -231,6 +231,33 @@ config.cc.s:
 	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/config.cc.s
 .PHONY : config.cc.s
 
+file.o: file.cc.o
+
+.PHONY : file.o
+
+# target to build an object file
+file.cc.o:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/file.cc.o
+.PHONY : file.cc.o
+
+file.i: file.cc.i
+
+.PHONY : file.i
+
+# target to preprocess a source file
+file.cc.i:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/file.cc.i
+.PHONY : file.cc.i
+
+file.s: file.cc.s
+
+.PHONY : file.s
+
+# target to generate assembly for a file
+file.cc.s:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/file.cc.s
+.PHONY : file.cc.s
+
 index.o: index.cc.o
 
 .PHONY : index.o
@@ -387,6 +414,9 @@ help:
 	@echo "... config.o"
 	@echo "... config.i"
 	@echo "... config.s"
+	@echo "... file.o"
+	@echo "... file.i"
+	@echo "... file.s"
 	@echo "... index.o"
 	@echo "... index.i"
 	@echo "... index.s"

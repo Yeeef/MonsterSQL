@@ -6,6 +6,7 @@
 /* TODO
  * 对一些特定情况，第一次打开文件，我的buffer可能会打不开文件
  * 也就是创建文件时，我的行为还没有定下来
+ * readblockfromfile的时候还需要更新我的map✅
  * 
  */ 
 class BufferNode
@@ -43,7 +44,8 @@ class BufferManager
 
     void WriteBlockBack(Block * block) throw(Error);
     void ReadBlockContent(string file_name, int block_id, char *content) throw(Error);
-
+    Block * getBlockFromFile(const string & fileName, int block_id) throw(Error);
+    void getMapName(string & map_name, const string & fileName, const int block_id);
     
 
     public:
@@ -53,7 +55,7 @@ class BufferManager
     void print() { cout << "[BufferManager]" << endl; }
     // get a block by the filename + block_id
     Block* getBlock(const string &fileName, int block_id) throw(Error);
-    Block * getBlockFromFile(const string & fileName, int block_id) throw(Error);
+    
     void addBlock(Block * block) throw(Error);
     
 };

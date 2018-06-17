@@ -1,9 +1,14 @@
 #include "minisql.h"
+#include "config.h"
 
 
 API api_init = API();
 API & MiniSQL::api = api_init;
 
+BufferManager buffer_init = BufferManager();
+
+
+BufferManager & MiniSQL::buffer_manager = buffer_init;
 
 CatalogManager catalog_init = CatalogManager();
 CatalogManager & MiniSQL::catalog_manager = catalog_init;
@@ -11,11 +16,14 @@ CatalogManager & MiniSQL::catalog_manager = catalog_init;
 RecordManager record_init = RecordManager();
 RecordManager & MiniSQL::record_manager = record_init;
 
-BufferManager buffer_init = BufferManager();
-BufferManager & MiniSQL::buffer_manager = buffer_init;
+
 
 IndexManager index_init = IndexManager();
 IndexManager & MiniSQL::index_manager = index_init;
+
+
+
+
 
 
 

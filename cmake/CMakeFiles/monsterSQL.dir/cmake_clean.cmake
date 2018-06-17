@@ -3,6 +3,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/monsterSQL.dir/buffer.cc.o"
   "CMakeFiles/monsterSQL.dir/catalog.cc.o"
   "CMakeFiles/monsterSQL.dir/config.cc.o"
+  "CMakeFiles/monsterSQL.dir/file.cc.o"
   "CMakeFiles/monsterSQL.dir/index.cc.o"
   "CMakeFiles/monsterSQL.dir/interpreter.cc.o"
   "CMakeFiles/monsterSQL.dir/main.cc.o"

@@ -3,12 +3,31 @@
 #include <unordered_set>
 
 CatalogManager::CatalogManager()
+:TableFile(FileManager("TableMeta/tables" ))
+, IndexFile(FileManager( "IndexMeta/indices"))
 {   
     // 从文件读信息填充我的table-set
+    // 这两个是常常“读”的，所以我把它们固定在内存里进行管理，更加方便
+    // 先把Table的名字全部读出来
+    // tables table_name primary attribute_count
+
+    //TableFile, IndexFile已经构建完毕，开始利用它们读取信息
+    // table: table_name(32)  attribute_count(1)
     
+   
+
+    
+
+
+    
+
     
 
 }
+
+CatalogManager::~CatalogManager()
+{}
+
 bool CatalogManager::create_table(const string &table_name, const vector<Attribute> &attributes) throw(Error)
 {
     //先判断是否是已经存在的table

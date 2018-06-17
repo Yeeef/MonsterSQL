@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/yee/Desktop/monster-sql/MiniSQL/buffer.cc" "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles/monsterSQL.dir/buffer.cc.o"
   "/Users/yee/Desktop/monster-sql/MiniSQL/catalog.cc" "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles/monsterSQL.dir/catalog.cc.o"
   "/Users/yee/Desktop/monster-sql/MiniSQL/config.cc" "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles/monsterSQL.dir/config.cc.o"
+  "/Users/yee/Desktop/monster-sql/MiniSQL/file.cc" "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles/monsterSQL.dir/file.cc.o"
   "/Users/yee/Desktop/monster-sql/MiniSQL/index.cc" "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles/monsterSQL.dir/index.cc.o"
   "/Users/yee/Desktop/monster-sql/MiniSQL/interpreter.cc" "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles/monsterSQL.dir/interpreter.cc.o"
   "/Users/yee/Desktop/monster-sql/MiniSQL/main.cc" "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles/monsterSQL.dir/main.cc.o"
