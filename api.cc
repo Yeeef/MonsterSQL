@@ -86,6 +86,7 @@ bool API::drop_table(const string &table_name) const throw(Error)
 /* TODO
  * rawdata 应该是一个 vector <char*> 
  * catalogmanger里面内建一个map访问更快
+ * 修改了Table,attributeset那里要修改
  */
 bool API::insert(const string &table_name, const vector<string> & insert_data, const vector <int> & type) const throw(Error)
 {
@@ -140,7 +141,7 @@ bool API::insert(const string &table_name, const vector<string> & insert_data, c
 
         // 或者实现一个index类来做
         // 通过table的map可以实现
-        vector <Attribute> attributes = table.get_attribute_set();
+        vector <Attribute> attributes;// = table.get_attribute_set();
         for(int i = 0; i < attributes.size(); i++)
         {
             if(attributes.at(i).is_index() == true)

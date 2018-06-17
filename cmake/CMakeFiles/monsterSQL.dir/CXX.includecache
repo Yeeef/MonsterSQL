@@ -35,6 +35,8 @@ unordered_set
 /Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
 config.h
 /Users/yee/Desktop/monster-sql/MiniSQL/config.h
+file.h
+/Users/yee/Desktop/monster-sql/MiniSQL/file.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/config.cc
 config.h
@@ -57,6 +59,8 @@ unordered_map
 /Users/yee/Desktop/monster-sql/MiniSQL/file.cc
 file.h
 /Users/yee/Desktop/monster-sql/MiniSQL/file.h
+minisql.h
+/Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
 
 /Users/yee/Desktop/monster-sql/MiniSQL/file.h
 config.h

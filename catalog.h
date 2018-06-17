@@ -1,6 +1,7 @@
 #ifndef CATALOG_H
 #define CATALOG_H
 #include "config.h"
+#include "file.h"
 
 
 /* TODO
