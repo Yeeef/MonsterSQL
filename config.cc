@@ -114,14 +114,13 @@ float Method::rawdata2float(const char *rawdata)
     return realdata;
 }
 
-const char * Method::int2rawdata(int * data)
+void Method::int2rawdata(int data, char * rawdata)
 {  
-    
-    return reinterpret_cast<char *>(data); 
+    memcpy(rawdata, &data, INT_LENGTH);
 }
-const char * Method::float2rawdata(float * data)
+void Method::float2rawdata(float data, char * rawdata)
 {
-    return reinterpret_cast<char *>(data);
+    memcpy(rawdata, &data, FLOAT_LENGTH);
 }
 
 const int Method::getLengthFromType(int type)
@@ -143,7 +142,7 @@ const int Method::getLengthFromType(int type)
 
 void Method::createFile(string file_name)
 {
-    FILE * file = fopen(file_name.c_str(), "wb");
+    FILE * file = fopen(Method::AbsolutePath(file_name).c_str(), "wb");
     if(file == nullptr)
     {
         cout << "[Method::createFile] cannot open file '"<< file_name << "' " << endl;
@@ -157,6 +156,11 @@ void Method::createFile(string file_name)
     fwrite(&record_count, 4, 1, file);
     fclose(file); 
 
+}
+
+void Method::Cutrawdata(int type, int beginPos, char * rawdata)
+{
+    memcpy(rawdata, rawdata + beginPos, Method::getLengthFromType(type));
 }
 
 string Method::AbsolutePath(string & file_name)

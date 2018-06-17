@@ -13,6 +13,15 @@
         "__config": "cpp",
         "__nullptr": "cpp",
         "vector": "cpp",
-        "iostream": "cpp"
+        "iostream": "cpp",
+        "__bit_reference": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "__tree": "cpp",
+        "map": "cpp",
+        "memory": "cpp",
+        "unordered_map": "cpp",
+        "unordered_set": "cpp",
+        "utility": "cpp"
     }
 }

@@ -19,14 +19,16 @@
 
 /* TODO
  * 是否需要建立一个table+attribute -> index_name的映射，在读indices的时候完成这个映射，这样可以减少冗余
- * 这个映射可能在table中内置更好一点
+ * 是👆这个映射可能在table中内置更好一点
+ * Table_set也许可以去除
  */
 
 class CatalogManager
 {
     private:
-    vector <Table> Table_set;
-    unordered_map <string, Table*> Name2Table;
+    unordered_map <string, Table *> Name2Table;
+    unordered_map <string, Index *> Name2Index;
+
     
     FileManager TableFile;
     FileManager IndexFile;

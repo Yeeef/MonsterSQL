@@ -11,11 +11,13 @@
 #define BLOCK_SIZE 4096
 #define MAX_TABLE_NAME 32
 #define MAX_ATTRIBUTE_NAME 32
+#define MAX_INDEX_NAME 32
 #define INT_LENGTH sizeof(int)
 #define FLOAT_LENGTH sizeof(float)
 #define CHAR_LENGTH 255
 #define TYPE_NULL 0
-#define TYPE_CHAR 255
+#define TYPE_CHAR 255 //允许的最短长度实际上是4
+#define MIN_TYPE_LENGTH 4
 #define TYPE_INT 256
 #define TYPE_FLOAT 257
 
@@ -137,14 +139,28 @@ class Block
  * UniqueAttri暂时也留着把
  * 
  */
+class Index
+{
+    private:
+    string index_name;
+    string table_name;
+    string attri_name;
+    public:
+    Index(string & index_name, string & table_name, string & attri_name) 
+    : index_name(index_name), table_name(table_name), attri_name(attri_name){}
+
+
+
+};
 class Table
 {
     private:
     string table_name;
-    int record_length;
-    int attribute_count;
+    int record_length; //通过计算得来
+    int attribute_count; // 通过上一步metadata已经填好
     unordered_map <string, Attribute> Name2Attri; //名字索引到属性
-    unordered_map <string, string> Attri2Index;
+    //下面的index*不需要我来delete，上一步已经填好
+    unordered_map <string, Index*> Attri2Index; //属性名索引到Index名
     unordered_map <string, bool> isUnique;
     string primary_name; 
 
@@ -159,6 +175,10 @@ class Table
     string get_table_name() {return table_name;};
     int get_record_length() { return record_length; }
     int get_attribute_count() {return attribute_count; }
+    void set_map_Attri2Index(string & attribute_name, Index * index)
+    {
+        Attri2Index.insert({attribute_name, index});
+    }
     //vector <Attribute> & get_attribute_set() { return attribute_set; }
     //vector <string> & get_indices_name() { return indices_name; }
 
@@ -166,6 +186,8 @@ class Table
     bool rawVec2rawData(const vector <char*> & raw_Vec, char * raw_data) throw(Error);
 
 };
+
+
 
 class Method
 {
@@ -176,11 +198,12 @@ class Method
     static int rawdata2int(const char * rawdata);
     static float rawdata2float(const char * rawdata);
     // 下面两个函数格外注意，返回的指针就是原来的指针
-    static const char * int2rawdata(int * data);
-    static const char * float2rawdata(float * data);
+    void int2rawdata(int data, char * rawdata);
+    void float2rawdata(float data, char * rawdata);
     static const int getLengthFromType(int type);
     static void createFile(string file_name);
     static string AbsolutePath(string & file_name);
+    static void Cutrawdata(int type, int beginPos, char * rawdata);
 
 };
 
