@@ -155,14 +155,38 @@ void BufferManager::addBlock(Block *block) throw(Error)
         }
 
     }
-    
-    
+   
     //注意这个函数同时会把 ref_bit变为1
     clock_ptr->set_block(block);
     clock_ptr = clock_ptr->get_next();
 
     delete replace_block;
      
+}
+
+/* 通过文件名删除对应的块，不需要写回文件 */
+/* 注意要更新delete对应的block，然后再置为nullptr; 更新block的map */
+void BufferManager::DeleteBlockByFile(const string & fileName)
+{
+    BufferNode * finder = clock_ptr;
+
+    for(int i = 0; i < max_block_count; i++)
+    {
+        Block * block = finder->get_block();
+        string blockFileName = block->get_filename();
+        int block_id = block->get_blockID();
+        string map_name;
+        getMapName(map_name, fileName, block_id);
+        // 不会析构我的 BufferNode * 
+        Name2Node.erase(map_name);
+
+        if(block->get_filename() == fileName)
+        {
+            delete block;
+            finder->set_block(nullptr);
+        }
+        finder = finder->get_next();
+    }
 }
 
 void BufferManager::WriteBlockBack(Block *block) throw(Error)

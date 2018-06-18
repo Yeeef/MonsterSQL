@@ -15,7 +15,7 @@ FileManager::FileManager(string file_name)
 
     this->file_name = file_name;
     //向buffer manager请求 文件名的 第一个block
-    BufferManager &buffermanager = MiniSQL::get_buffer_manager();
+    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
     // 0th block 存储 file metadata: record_length, first, record_count
     Block *meta_block = buffermanager.getBlock(file_name, 0);
 
@@ -41,10 +41,18 @@ FileManager::FileManager(string file_name)
 // const修饰，保证我的指针不会被改变
 const char *FileManager::get_record(const int record_addr) const throw(Error)
 {
-    //通过record计算一下这个是否越界？越界检查非常难做。。。除非能保留一个到最后一条记录的指针
+    /* 错误检查 */
+    if(record_addr >= getEOF())
+    {
+        string err_info = "[FileManager::get_record] addr out of EOF";
+        Error err(err_info);
+        throw err;
+    }
+
+    /* ----------------------------- */
 
     // 计算block_id
-    BufferManager buffermanager = MiniSQL::get_buffer_manager();
+    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
 
     int block_id = record_addr / BLOCK_SIZE;
     //就是实际的偏移地址
@@ -54,6 +62,41 @@ const char *FileManager::get_record(const int record_addr) const throw(Error)
 
     // 读出所需的record
     return block->getContent() + posInBlock;
+}
+
+/*
+ * 获得block; 改变content; 标记脏块；更新 free_list; 更新头信息
+ */
+bool FileManager::delete_record_ByAddr(const int record_addr) throw(Error)
+{
+    /* 错误检查 */
+    if(record_addr >= getEOF())
+    {
+        string err_info = "[FileManager::get_record] addr out of EOF";
+        Error err(err_info);
+        throw err;
+    }
+    /* ----------------------------- */
+
+    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+    int block_id = getBlockIDFromAddr(record_addr);
+    int relative_addr = getRelativeAddrInBlock(block_id, record_addr);
+    Block * block = buffermanager.getBlock(file_name, block_id);
+    char * rawdata = block->getContent() + relative_addr;
+    int temp = first_free_record_addr;
+
+    // 更新free_list
+    first_free_record_addr = record_addr;
+    memcpy(rawdata, &temp, INT_LENGTH);
+
+    //标记脏块
+    block->set_dirty(true);
+
+    // 更新头信息
+    record_count--;
+    updataMeta(); 
+    return true;  
+
 }
 
 // 返回插入后的recordID
@@ -227,7 +270,7 @@ int FileManager::getRelativeAddrInBlock(const int block_id, const int addr)
     return ret;
 }
 
-int FileManager::getEOF()
+int FileManager::getEOF() const 
 {
     //通过record_count算出绝对的结束地址
     //算出之前有多少块 包括了 0th块
@@ -241,3 +284,8 @@ int FileManager::getEOF()
 
 }
 
+void FileManager::ReNewAllPtr()
+{
+    renewPointer();
+    renewDeletePointer();
+}

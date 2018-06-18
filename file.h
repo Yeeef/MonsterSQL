@@ -23,7 +23,6 @@ class FileManager
     Block * block; // 具体这个file的block, 这里的block由buffer集中delete不用file来管
     int block_count; // 可以算出来
     int record_length; // 读出来的
-    int physic_record_length; // 对于一些 valid位？
     int first_free_record_addr; //绝对地址，读出来的
     int record_count; // 读出来的
     int record_count_perblock; //可以算出来
@@ -40,7 +39,7 @@ class FileManager
     void PointerIncrement();
     int getBlockIDFromAddr(const int addr);
     int getRelativeAddrInBlock(const int block_id, const int addr);
-    int getEOF();
+    int getEOF() const;
     void LoadRecord(const int pointer, char * rawdata);
 
 
@@ -53,7 +52,10 @@ class FileManager
     
     const char * get_record(const int record_addr) const throw(Error);
     const int add_record(const char * rawdata) throw(Error);
+    // 这个函数有应用场景
+    bool delete_record_ByAddr(const int record_addr) throw(Error);
     int getNextRecord(char * rawdata) throw (Error);
+    void ReNewAllPtr();
     //int getNextAttriRecord(string & attribute_name, char * rawdata) throw (Error);
     
 

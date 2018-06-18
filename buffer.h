@@ -54,9 +54,9 @@ class BufferManager
 
     void print() { cout << "[BufferManager]" << endl; }
     // get a block by the filename + block_id
-    Block* getBlock(const string &fileName, int block_id) throw(Error);
-    
+    Block* getBlock(const string &fileName, int block_id) throw(Error);  
     void addBlock(Block * block) throw(Error);
+    void DeleteBlockByFile(const string & fileName);
     
 };
 

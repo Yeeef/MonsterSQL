@@ -28,10 +28,14 @@ class CatalogManager
     private:
     unordered_map <string, Table *> Name2Table;
     unordered_map <string, Index *> Name2Index;
+    unordered_map <string, int> TableName2Addr;
+    unordered_map <string, int> IndexName2Addr;
 
     
     FileManager TableFile;
     FileManager IndexFile;
+
+    void LoadAttriInfo();
 
     public:
     CatalogManager();
@@ -42,7 +46,12 @@ class CatalogManager
     bool create_table(const string & table_name, const vector <Attribute> & attributes) throw(Error);
     bool drop_table(const string & table_name) throw(Error);
     bool get_indices(const string & table_name, vector <string> & indices_name) throw(Error);
-    bool get_table(const string & table_name, Table & table) throw(Error);
+    const Table * get_table(const string & table_name) throw(Error);
+    bool createTableFile(Table * table);
+    void setMapName2Index(const string & index_name, const Index * index);
+    bool create_index(const string & index_name, 
+                      const string & table_name, const string & attribute_name) throw(Error);
+    bool drop_index(const string & index_name) throw(Error); 
 
 };
 

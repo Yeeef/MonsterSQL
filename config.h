@@ -5,13 +5,14 @@
 #include <sstream>
 #include <map>
 #include <unordered_map>
+#include <unordered_set>
 #define DEBUG -1
 #define PATH "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/"
 
 #define BLOCK_SIZE 4096
 #define MAX_TABLE_NAME 32
 #define MAX_ATTRIBUTE_NAME 32
-#define MAX_INDEX_NAME 32
+#define MAX_INDEX_NAME 64
 #define INT_LENGTH sizeof(int)
 #define FLOAT_LENGTH sizeof(float)
 #define CHAR_LENGTH 255
@@ -30,36 +31,60 @@
 
 using namespace std;
 
+class Method
+{
+    public:
+    static void vec2rawdata(const vector <char *> & raw_vec );
+    //这个函数内部有new
+    static char * string2rawdata(const string & str, const int type);
+    static int rawdata2int(const char * rawdata);
+    static float rawdata2float(const char * rawdata);
+    static void rawdata2string(const char * rawdata, int length, string & out_str);
+    // 下面两个函数格外注意，返回的指针就是原来的指针
+    void int2rawdata(int data, char * rawdata);
+    void float2rawdata(float data, char * rawdata);
+    static const int getLengthFromType(int type);
+    static void createFile(string file_name, int record_length);
+    static string AbsolutePath(string & file_name);
+    static void Cutrawdata(int type, int beginPos, char * rawdata);
+    static void setIndexFromTableAttri(const string & table_name, const string & attri_name, string & index_name);
+    static void deleteFile(string file_name);
+    
+
+};
+
 class Attribute
 {
     // all this can be read from the catalog
     private:
     // attribute name
     string name;
-    // index_name if there is any
-    string index_name;
     // which type is the Attribute
-    int type;
-    // the length of the Attribute
+    short type;
+
     int length;
 
     bool isPrimary;
     bool isUnique;
-    bool isIndex;
 
 
     public:
-    Attribute(string name, bool isPrimary = false, bool isUnique = false)
-    : name(name), isPrimary(isPrimary), isUnique(isUnique) {}
+    Attribute(string & name, short type, bool isPrimary, bool isUnique)
+    : name(name), type(type), isPrimary(isPrimary), isUnique(isUnique) 
+    {
+        length = Method::getLengthFromType(type); 
+    }
+    Attribute(string & name, short type, bool isUnique)
+    : name(name), type(type), isUnique(isUnique) { isPrimary = false; }
     ~Attribute(){};
 
+    void set_primary(bool status) { isPrimary = true; }
+    void set_Unique(bool status) {isUnique = true; }
     string get_name() const { return name; }
-    string get_index_name() const { return index_name; }
     int get_type() const {return type; }
-    int get_length() const {return length; }
+    int get_length() const { return length; }
     bool is_primary() { return isPrimary; }
     bool is_unique() { return isUnique; }
-    bool is_index() const {return isIndex;}
 
 
 };
@@ -146,66 +171,92 @@ class Index
     string table_name;
     string attri_name;
     public:
-    Index(string & index_name, string & table_name, string & attri_name) 
-    : index_name(index_name), table_name(table_name), attri_name(attri_name){}
+    Index(const string & index_name, const string & table_name, const string & attri_name) 
+    : index_name(index_name), table_name(table_name), attri_name(attri_name) {}
+    string get_index_name() { return index_name; }
 
 
 
 };
+
+/* TODO
+ * record_length是否需要？需要
+ * attri_count?
+ * Attri2Index的行为一定要格外注意
+ * 
+ */
 class Table
 {
     private:
     string table_name;
-    int record_length; //通过计算得来
+    int record_length; //通过计算得来,这个是实在的记录的一个长度
     int attribute_count; // 通过上一步metadata已经填好
     unordered_map <string, Attribute> Name2Attri; //名字索引到属性
     //下面的index*不需要我来delete，上一步已经填好
     unordered_map <string, Index*> Attri2Index; //属性名索引到Index名
-    unordered_map <string, bool> isUnique;
+    unordered_set <string> UniqueAttri;
     string primary_name; 
-
+    vector <short> typeVec; //这个必须有，用于做类型检查
+    
     public:
-    Table(string table_name, int record_length, int attribute_count)
-    : table_name(table_name), record_length(record_length), attribute_count(attribute_count){ }
+    vector <string> attri_name; //这个也必须有，反映了attribute的排序
 
     // 专门为metadata准备的
-    Table(string & table_name, int attribute_count) 
+    Table(const string & table_name, const int attribute_count) 
     : table_name(table_name), attribute_count(attribute_count) { }
 
-    string get_table_name() {return table_name;};
-    int get_record_length() { return record_length; }
-    int get_attribute_count() {return attribute_count; }
-    void set_map_Attri2Index(string & attribute_name, Index * index)
+    bool isIndex(const string & attri_name, string & index_name) const
+    {
+        auto search = Attri2Index.find(attri_name);
+        if(search == Attri2Index.end())
+            return false;
+        else
+        {
+            index_name = search->second->get_index_name(); 
+            return true;
+        }
+            
+    }
+    void addType(short type){ typeVec.push_back(type); }
+    void addAttriName(string & name) { attri_name.push_back(name); }
+    string get_table_name() const  {return table_name;};
+    int get_record_length() const { return record_length; }
+    int get_attribute_count() const {return attribute_count; }
+    void get_indices(vector <string> & indicesName) const ;
+    void set_map_Attri2Index(const string & attribute_name, Index * index)
     {
         Attri2Index.insert({attribute_name, index});
     }
-    //vector <Attribute> & get_attribute_set() { return attribute_set; }
-    //vector <string> & get_indices_name() { return indices_name; }
+    void set_map_Name2Attri(const string & attribute_name, Attribute attri)
+    {
+        Name2Attri.insert({attribute_name, attri});
+    }
+    void set_uniqueSet(const string & attri_name)
+    {
+        UniqueAttri.insert(attri_name);
+    }
+    void set_primary_name(const string & primary_name)
+    {
+        this->primary_name = primary_name;
+    }
+    void set_record_length(const int record_length)
+    {
+        this->record_length = record_length;
+    }
+    void set_primary(const string & attri_name);
+    void set_unique(const string & attri_name);
 
-    bool isValidInput(const vector <string> & insert_data, const vector <int> & type, vector <char*> & raw_data) throw(Error);
-    bool rawVec2rawData(const vector <char*> & raw_Vec, char * raw_data) throw(Error);
+    bool isValidInput(const vector <string> & insert_data, 
+    const vector <int> & type, vector <char*> & raw_data) const throw(Error);
+
+    bool rawVec2rawData(const vector <char*> & raw_Vec, char * raw_data) const throw(Error);
+
 
 };
 
 
 
-class Method
-{
-    public:
-    static void vec2rawdata(const vector <char *> & raw_vec );
-    //这个函数内部有new
-    static char * string2rawdata(const string & str, const int type);
-    static int rawdata2int(const char * rawdata);
-    static float rawdata2float(const char * rawdata);
-    // 下面两个函数格外注意，返回的指针就是原来的指针
-    void int2rawdata(int data, char * rawdata);
-    void float2rawdata(float data, char * rawdata);
-    static const int getLengthFromType(int type);
-    static void createFile(string file_name);
-    static string AbsolutePath(string & file_name);
-    static void Cutrawdata(int type, int beginPos, char * rawdata);
 
-};
 
 // now especially for the B+ tree
 // record_id采用绝对地址没有问题，因为record一般不会移动
