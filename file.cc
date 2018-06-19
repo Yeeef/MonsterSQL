@@ -33,7 +33,7 @@ FileManager::FileManager(string file_name)
     renewDeletePointer();
     renewPointer();
 
-#ifdef DEBUG
+#ifdef DEBUGFILE
     cout << "[FileManager::FileManager] construct with '" << file_name << "'" << endl;
 #endif
 }
@@ -66,6 +66,7 @@ const char *FileManager::get_record(const int record_addr) const throw(Error)
 
 /*
  * 获得block; 改变content; 标记脏块；更新 free_list; 更新头信息
+ * 注意，delete的时候，不能record_count--,因为通过free_list添加的时候，我没有让它++
  */
 bool FileManager::delete_record_ByAddr(const int record_addr) throw(Error)
 {
@@ -93,7 +94,6 @@ bool FileManager::delete_record_ByAddr(const int record_addr) throw(Error)
     block->set_dirty(true);
 
     // 更新头信息
-    record_count--;
     updataMeta(); 
     return true;  
 
@@ -152,8 +152,8 @@ int FileManager::AddByFreeList(const char *rawdata)
 
     //通过freelist来判断第一个应该插入的地址
     record_addr = first_free_record_addr;
-    block_id = record_addr / BLOCK_SIZE;                              //应该插入的block, 注意这里不需要+1
-    record_relative_addr = record_addr - (block_id + 1) * BLOCK_SIZE; //相对地址
+    block_id = getBlockIDFromAddr(record_addr);
+    record_relative_addr = getRelativeAddrInBlock(block_id, record_addr);
 
     Block * block = buffermanager.getBlock(file_name, block_id);
 
@@ -171,11 +171,16 @@ void FileManager::updataMeta()
     BufferManager & buffermanager = MiniSQL::get_buffer_manager();
 
     Block * metahead = buffermanager.getBlock(file_name, 0);
+#ifdef DEBUGFILE
+    cout << "[FileManager::updateMeta] " << file_name << "0 " << record_length << " " << first_free_record_addr << " "
+              << record_count << endl;
+#endif
     char * content = metahead->getContent();
     memcpy(content, (&record_length), INT_LENGTH);
     memcpy(content + INT_LENGTH, (&first_free_record_addr), INT_LENGTH);
     memcpy(content + 2*INT_LENGTH, (&record_count), INT_LENGTH);
     metahead->set_dirty(true); //标记脏
+
 }
 
 // 指针先++再获得内容

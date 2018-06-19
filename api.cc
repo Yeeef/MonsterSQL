@@ -3,9 +3,6 @@
 
 bool API::create_table(const string &table_name, const Attribute &primary, const vector<Attribute> &attributes) const throw(Error)
 {
-#ifdef DEBUG
-    cout << "[API::create_table]" << endl;
-#endif
 
     // 获取catalogmanager
     CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
@@ -22,10 +19,6 @@ bool API::create_table(const string &table_name, const Attribute &primary, const
         Method::setIndexFromTableAttri(table_name, primary.get_name(), index_name);
         create_index(table_name, primary.get_name(), index_name);
 
-#ifdef DEBUG
-        cout << "[API:create table: '" << table_name << "' successfully" << endl;
-#endif
-
         return true;
     }
     catch (Error err)
@@ -41,10 +34,6 @@ bool API::create_table(const string &table_name, const Attribute &primary, const
  */
 bool API::drop_table(const string &table_name) const throw(Error)
 {
-#ifdef DEBUG
-    cout << "[API::drop_table]" << endl;
-#endif
-
     // 获取catalogmanager
     CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
     // 获取recordmanager
@@ -58,14 +47,10 @@ bool API::drop_table(const string &table_name) const throw(Error)
         // drop all indices related to table
         for (auto index : indices_name)
         {
-            drop_index(table_name, index);
+            drop_index(index, table_name);
         }
         catalogmanager.drop_table(table_name);
         recordmanager.drop_table(table_name);
-
-#ifdef DEBUG
-        cout << "[API:drop table: '" << table_name << "' successfully" << endl;
-#endif
 
         return true;
     }
@@ -87,9 +72,7 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
 {
 
     bool ret;
-#ifdef DEBUG
-    cout << "[API::insert]" << endl;
-#endif
+
 
     // 获取catalogmanager
     CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
@@ -103,7 +86,7 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
     try
     {
         // 从catalog获得table
-        const Table *table = catalogmanager.get_table(table_name);
+        const Table * table = catalogmanager.get_table(table_name);
 
         // parse data
         rawdata = new char[table->get_record_length()];

@@ -95,6 +95,13 @@ void Table::get_indices(vector<string> &indicesName) const
         indicesName.push_back(index.second->get_index_name());
     }
 }
+void Table::print()
+{
+    for(auto attri : Name2Attri)
+    {
+        cout << attri.first << " ";
+    }
+}
 /* ---------------------------------------------*/
 
 /* ---------------------------------------------*/
@@ -213,6 +220,7 @@ void Method::deleteFile(string file_name)
     remove(Method::AbsolutePath(file_name).c_str());
     // 从buffer中删除？也许不需要删除，只需要把dirty标记为false就好？
     BufferManager &buffermanager = MiniSQL::get_buffer_manager();
+    buffermanager.DeleteBlockByFile(file_name);
 }
 
 void Method::Cutrawdata(int type, int beginPos, char *rawdata)

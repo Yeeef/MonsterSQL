@@ -8,65 +8,54 @@ using namespace std;
 // todo: 了解 reinterpret
 
 
-
+/* TODO
+ * drop_index的catalog行为有问题✅
+ * 删除table,再create会出问题，tables的free_list更新有误
+ * 重复create_table会出问题
+ */
 int main()
 {
 
-
-try
-{
-
-}catch(Error err)
-{
     
-}
-    //Interpreter test;
-    //test.print();
-
-    /*
-    FILE * file = fopen("test.bin", "wb");
-    char data[32];
-    int * p2;
-    int a = 123434;
-    p2 = &a;
-    memcpy(data, p2, sizeof(int));
-    cout << data << endl;
-    fwrite(data, 32, 1, file);
-    file = fopen("test", "rb");
-    fread(data, 32, 1, file);
-    memcpy(p2, data, sizeof(int));
-    cout << *p2 << endl;
-    */
-    /*
-    fstream file("test", ios::in | ios::out | ios::binary);
-    if (!file.is_open())
-    {
-        cout << "no" << endl;
-    }
-    int *p2;
-    int a = 520;
-    p2 = &a;
-    //file.write(reinterpret_cast<char *>(p2), sizeof(int));
-
-    char aa[4];
-    file.read(aa, sizeof(int));
-    p2 = reinterpret_cast<int *>(aa);
-
-    cout << *p2 << endl;
-    ;
-    memcpy(p2, aa, sizeof(int));
-    cout << *p2 << endl;
-    */
-
     cout << "MonsterSQL👹" << endl;
+    CatalogManager & catalogmanager = MiniSQL::get_catalog_manager();
+    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+    buffermanager.print();
+    catalogmanager.print();
+    API & api = MiniSQL::get_api();
+    string pri_name = "ID";
+    vector <Attribute> attri_set;
+    Attribute primary(pri_name, TYPE_INT, true, true);
+    attri_set.push_back(primary);
 
-    
-    int * p1 = new int;
-    ptr Pointer(4);
-    memcpy(p1, Pointer.get_rawdata(), 4);
+    Attribute attri1("a1", TYPE_FLOAT, false);
+    attri_set.push_back(attri1);
+    Attribute attri2("a2", 5, false, true);
+    attri_set.push_back(attri2);
 
-    cout << *p1 << endl;
-    delete p1;
+    try
+    {
+        //api.drop_table("student");
+
+        //api.create_table("parent", primary, attri_set);
+        //api.create_table("child", primary, attri_set);
+        //api.create_table("teacher", primary, attri_set);
+        //api.create_table("killer", primary, attri_set);
+        //api.drop_table("killer");
+        api.create_table("lover", primary, attri_set);
+        catalogmanager.print();
+        buffermanager.print();
+        buffermanager.WriteAllBack();
+
+    }
+    catch (Error err)
+    {
+        err.print_error();
+
+
+    }
+
+
     
 
 

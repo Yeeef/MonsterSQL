@@ -39,9 +39,15 @@ CatalogManager::CatalogManager()
         memcpy(IndexName, Indexrawdata, MAX_INDEX_NAME);
         memcpy(TableName, Indexrawdata + MAX_INDEX_NAME, MAX_TABLE_NAME);
         memcpy(AttributeName, Indexrawdata + MAX_INDEX_NAME + MAX_TABLE_NAME, MAX_ATTRIBUTE_NAME);
-        string table_name(TableName);
-        string index_name(IndexName);
-        string attri_name(AttributeName);
+        string table_name;
+        Method::rawdata2string(TableName, MAX_TABLE_NAME, table_name);
+
+        string index_name;
+        Method::rawdata2string(IndexName, MAX_INDEX_NAME, index_name);
+
+        string attri_name;
+        Method::rawdata2string(AttributeName, MAX_ATTRIBUTE_NAME, attri_name);
+
         Index *index = new Index(index_name, table_name, attri_name);
         //建立索引名到索引的映射
         Name2Index.insert({index_name, index});
@@ -72,7 +78,7 @@ bool CatalogManager::create_table(const string &table_name, const vector<Attribu
     /* 一些错误检查 */
     //先判断是否是已经存在的table
     auto search_table = Name2Table.find(table_name);
-    if (search_table == Name2Table.end())
+    if (search_table != Name2Table.end())
     {
         string err_info = "[CatalogManager::create_table]: '" + table_name + "' already exists";
         Error err(err_info);
@@ -211,6 +217,13 @@ bool CatalogManager::get_indices(const string &table_name, vector<string> &indic
 {   
     /* 错误检查 */
     //不需要检查是否存在这个table，如果我的createtable没问题的话，index肯定至少存在一个
+    auto search = Name2Table.find(table_name);
+    if(search == Name2Table.end())
+    {
+        string err_info = "[CatalogManager::get_indices] table '" + table_name + "' doesn't exist";
+        Error err(err_info);
+        throw err;
+    }
 
     /* ------------------------------ */
     Table * table = Name2Table.at(table_name);
@@ -341,4 +354,20 @@ void CatalogManager::LoadAttriInfo()
         
         table->set_record_length(record_length);
     }
+}
+
+void CatalogManager::print()
+{
+    for(auto tablemap : Name2Table)
+    {
+        Table * table = tablemap.second;
+        cout << tablemap.first << " ";
+        table->print();
+    }
+    cout << endl;
+    for(auto indexmap : Name2Index)
+    {
+        cout << indexmap.first << " ";
+    }
+    cout << endl;
 }

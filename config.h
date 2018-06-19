@@ -9,6 +9,7 @@
 #define DEBUG -1
 #define PATH "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/"
 
+
 #define BLOCK_SIZE 4096
 #define MAX_TABLE_NAME 32
 #define MAX_ATTRIBUTE_NAME 32
@@ -69,13 +70,15 @@ class Attribute
 
 
     public:
-    Attribute(string & name, short type, bool isPrimary, bool isUnique)
+    Attribute(string  name, short type, bool isPrimary, bool isUnique)
     : name(name), type(type), isPrimary(isPrimary), isUnique(isUnique) 
     {
         length = Method::getLengthFromType(type); 
     }
-    Attribute(string & name, short type, bool isUnique)
-    : name(name), type(type), isUnique(isUnique) { isPrimary = false; }
+    Attribute(string  name, short type, bool isUnique)
+    : name(name), type(type), isUnique(isUnique) 
+    { length = Method::getLengthFromType(type); 
+         isPrimary = false; }
     ~Attribute(){};
 
     void set_primary(bool status) { isPrimary = true; }
@@ -130,6 +133,7 @@ class Block
     ~Block()
     {
         delete [] content;
+        
     }
     void set_filename(const string & filename) { this->filename = filename; }
     void set_block_id(const int block_id) { this->block_id = block_id; }
@@ -250,6 +254,8 @@ class Table
     const vector <int> & type, vector <char*> & raw_data) const throw(Error);
 
     bool rawVec2rawData(const vector <char*> & raw_Vec, char * raw_data) const throw(Error);
+
+    void print();
 
 
 };

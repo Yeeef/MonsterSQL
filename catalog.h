@@ -40,7 +40,7 @@ class CatalogManager
     public:
     CatalogManager();
     ~CatalogManager();
-    void print(){ std::cout << "[CatalogManager]" << std::endl; }
+    void print();
 
     // return true if create succefully, return false if meet some problem
     bool create_table(const string & table_name, const vector <Attribute> & attributes) throw(Error);
@@ -52,6 +52,8 @@ class CatalogManager
     bool create_index(const string & index_name, 
                       const string & table_name, const string & attribute_name) throw(Error);
     bool drop_index(const string & index_name) throw(Error); 
+
+    
 
 };
 

@@ -52,11 +52,12 @@ class BufferManager
     BufferManager();
     ~BufferManager();
 
-    void print() { cout << "[BufferManager]" << endl; }
+    void print();
     // get a block by the filename + block_id
     Block* getBlock(const string &fileName, int block_id) throw(Error);  
     void addBlock(Block * block) throw(Error);
     void DeleteBlockByFile(const string & fileName);
+    void WriteAllBack();
     
 };
 
