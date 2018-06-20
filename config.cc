@@ -8,6 +8,53 @@
  * 
  */
 
+
+bool Table::GetAttriByName(const string & attri_name, Attribute & attri) const throw(Error)
+{
+    attri = Name2Attri.at(attri_name);
+}
+
+bool Table::isAttribute(const string & attri_name) const throw(Error)
+{
+    auto search = Name2Attri.find(attri_name);
+
+    // 不存在这个Attribute
+    if(search == Name2Attri.end())
+    {
+        string err = "[Table::isAttribute] '" + attri_name + "' doesn't exist";
+        throw Error(err);
+
+    }
+    return true;
+}
+/* 检查rawdata中的unique/ primary属性是否重复出现
+ *
+ * 
+ */
+bool Table::CheckConsistency(const char *ExistData, const char *rawdata, string &duplicate) const throw(Error)
+{
+    int startPos = 0;
+    for (auto attri : attri_name)
+    {
+        auto search = UniqueAttri.find(attri);
+        auto Attribute = Name2Attri.at(attri);
+        auto attri_length = Attribute.get_length();
+
+        //这个属性是一个unique
+        if (search != UniqueAttri.end())
+        {
+            // 判断这一段数据区是否一样,如果一样那么有问题了
+            if (Method::isEqual(ExistData + startPos, rawdata + startPos, attri_length) == true)
+            {
+                duplicate = Attribute.get_name();
+                return false;
+            }
+        }
+        startPos += attri_length;
+    }
+    return true;
+}
+
 /*
  * 检查insert_data是否符合格式；翻译为rawdata给raw_Vec;
  * 
@@ -41,8 +88,8 @@ bool Table::isValidInput(const vector<string> &insert_data,
     /* parse data */
     for (int i = 0; i < attribute_count; i++)
     {
-        char *rawdata;
-        rawdata = Method::string2rawdata(insert_data.at(i), type.at(i));
+        char *rawdata = new char [Method::getLengthFromType(type.at(i)) ];
+        Method::string2rawdata(insert_data.at(i), type.at(i), rawdata);
         // 翻译好的数据加入 raw_vec
         raw_Vec.push_back(rawdata);
     }
@@ -56,9 +103,9 @@ bool Table::rawVec2rawData(const vector<char *> &raw_Vec, char *raw_data) const 
     if (raw_Vec.size() != attribute_count)
     {
         Error err("[Table::rawVec2rawData] attribute count mismatch");
-        for(auto raw : raw_Vec)
-            delete [] raw;
-        delete [] raw_data; 
+        for (auto raw : raw_Vec)
+            delete[] raw;
+        delete[] raw_data;
         throw err;
         return false;
     }
@@ -97,7 +144,7 @@ void Table::get_indices(vector<string> &indicesName) const
 }
 void Table::print()
 {
-    for(auto attri : Name2Attri)
+    for (auto attri : Name2Attri)
     {
         cout << attri.first << " ";
     }
@@ -108,7 +155,21 @@ void Table::print()
 /* Method */
 
 // convert a string to the raw data with given type
-char *Method::string2rawdata(const string &str, const int type)
+bool Method::isEqual(const char *a, const char *b, const int length)
+{
+    int isequal = true;
+    for (int i = 0; i < length; i++)
+    {
+        if (a[i] != b[i])
+        {
+            isequal = false;
+            break;
+        }
+    }
+    return isequal;
+}
+
+void Method::string2rawdata(const string & str, const int type, char * rawdata)
 {
     stringstream ss;
     ss << str;
@@ -119,18 +180,14 @@ char *Method::string2rawdata(const string &str, const int type)
     {
         int temp;
         ss >> temp;
-        auto rawdata = new char[INT_LENGTH];
         memcpy(rawdata, reinterpret_cast<char *>(&temp), INT_LENGTH);
-        return rawdata;
         break;
     }
     case TYPE_FLOAT:
     {
         float temp;
         ss >> temp;
-        char *rawdata = new char[4];
         memcpy(rawdata, (&temp), FLOAT_LENGTH);
-        return rawdata;
         break;
     }
     default:
@@ -138,9 +195,7 @@ char *Method::string2rawdata(const string &str, const int type)
         //actually it's type_char
         // type_char的大小就代表了长度！
         int length = Method::getLengthFromType(type);
-        auto rawdata = new char[length];
         ss >> rawdata;
-        return rawdata;
         break;
     }
     }
@@ -199,7 +254,7 @@ const int Method::getLengthFromType(int type)
     }
 }
 
-void Method::createFile(string file_name, int record_length)
+void Method::createFile(const string &file_name, int record_length)
 {
     FILE *file = fopen(Method::AbsolutePath(file_name).c_str(), "wb");
     if (file == nullptr)
@@ -215,20 +270,29 @@ void Method::createFile(string file_name, int record_length)
     fclose(file);
 }
 
-void Method::deleteFile(string file_name)
+void Method::deleteFile(const string &file_name)
 {
+
     remove(Method::AbsolutePath(file_name).c_str());
     // 从buffer中删除？也许不需要删除，只需要把dirty标记为false就好？
     BufferManager &buffermanager = MiniSQL::get_buffer_manager();
     buffermanager.DeleteBlockByFile(file_name);
 }
 
+bool Method::isFileExist(const string &file_name)
+{
+    FILE *file = fopen(AbsolutePath(file_name).c_str(), "rb");
+    if (file == nullptr)
+        return false;
+    else
+        return true;
+}
 void Method::Cutrawdata(int type, int beginPos, char *rawdata)
 {
     memcpy(rawdata, rawdata + beginPos, Method::getLengthFromType(type));
 }
 
-string Method::AbsolutePath(string &file_name)
+string Method::AbsolutePath(const string &file_name)
 {
     return PATH + file_name;
 }

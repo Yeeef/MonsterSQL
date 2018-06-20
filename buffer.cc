@@ -118,7 +118,7 @@ Block *BufferManager::getBlockFromFile(const string &fileName, int block_id) thr
     return block;
 }
 
-/* 加入新结点，同时更新map */ ✅
+/* 加入新结点，同时更新map ✅ */ 
 void BufferManager::addBlock(Block *block) throw(Error)
 {
     //把block加入时钟循环链表

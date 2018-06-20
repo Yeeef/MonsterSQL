@@ -37,7 +37,7 @@ class Method
     public:
     static void vec2rawdata(const vector <char *> & raw_vec );
     //这个函数内部有new
-    static char * string2rawdata(const string & str, const int type);
+    static void string2rawdata(const string & str, const int type, char * rawdata);
     static int rawdata2int(const char * rawdata);
     static float rawdata2float(const char * rawdata);
     static void rawdata2string(const char * rawdata, int length, string & out_str);
@@ -45,11 +45,13 @@ class Method
     void int2rawdata(int data, char * rawdata);
     void float2rawdata(float data, char * rawdata);
     static const int getLengthFromType(int type);
-    static void createFile(string file_name, int record_length);
-    static string AbsolutePath(string & file_name);
+    static void createFile(const string & file_name, int record_length);
+    static string AbsolutePath(const string & file_name);
     static void Cutrawdata(int type, int beginPos, char * rawdata);
     static void setIndexFromTableAttri(const string & table_name, const string & attri_name, string & index_name);
-    static void deleteFile(string file_name);
+    static void deleteFile(const string & file_name);
+    static bool isFileExist(const string & file_name);
+    static bool isEqual(const char * a, const char * b, const int length);
     
 
 };
@@ -187,7 +189,7 @@ class Index
  * record_length是否需要？需要
  * attri_count?
  * Attri2Index的行为一定要格外注意
- * 
+ * Name2Attri可以改成指针
  */
 class Table
 {
@@ -221,6 +223,9 @@ class Table
         }
             
     }
+    bool GetAttriByName(const string & attri_name, Attribute & attri) const throw(Error);
+    bool isAttribute(const string & attri_name) const throw(Error); 
+    bool CheckConsistency(const char * ExistData, const char * rawdata, string & duplicate)  const throw(Error);
     void addType(short type){ typeVec.push_back(type); }
     void addAttriName(string & name) { attri_name.push_back(name); }
     string get_table_name() const  {return table_name;};
