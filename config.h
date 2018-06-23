@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #define DEBUG -1
+#define DEBUGINDEX -1
 #define PATH "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/"
 
 
@@ -292,6 +293,11 @@ class ptr
 
     int get_id() const { return id; }
     char * get_rawdata() const { return rawdata;}
+    void set_id(const int id)
+    {
+        this->id = id;
+        memcpy(rawdata, &id, INT_LENGTH);
+    }
 
 };
 

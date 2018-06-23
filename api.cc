@@ -81,6 +81,7 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
     RecordManager &recordmanager = MiniSQL::get_record_manager();
     // 获取 indexmanager
     IndexManager &indexmanager = MiniSQL::get_index_manager();
+    BufferManager & bufferManager = MiniSQL::get_buffer_manager();
     vector<char *> raw_Vec;
     char *rawdata;
 
@@ -103,6 +104,7 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
         
         int addr = recordmanager.insert(table_name, rawdata);
         ptr Pointer(addr); 
+
 
         for (int i = 0; i < table->attri_name.size(); i++)
         {
@@ -143,6 +145,7 @@ bool API::Delete(const string &table_name, const vector<string> &attribute_name,
 bool API::select(const string &table_name, const vector<string> & attribute_name,
                  const vector<int> & condition, const vector<string> & operand) const throw(Error)
 {
+    /*
     CatalogManager & catalogmanager = MiniSQL::get_catalog_manager();
     RecordManager & recordmanager = MiniSQL::get_record_manager();
     IndexManager & indexmanager = MiniSQL::get_index_manager();
@@ -206,6 +209,7 @@ bool API::select(const string &table_name, const vector<string> & attribute_name
         return false;
 
     }
+     */
 
 
 }
@@ -221,7 +225,7 @@ bool API::create_index(const string &table_name, const string &attribute_name,
         CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
         IndexManager & indexManager = MiniSQL::get_index_manager();
         catalogmanager.create_index(index_name, table_name, attribute_name);
-        //indexManager.createIndex(table_name, attribute_name, index_name, )
+        indexManager.createIndex(table_name, attribute_name, index_name);
     }
     catch (Error err)
     {

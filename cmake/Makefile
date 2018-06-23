@@ -123,6 +123,87 @@ monsterSQL/fast:
 	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/build
 .PHONY : monsterSQL/fast
 
+BPTree.o: BPTree.cpp.o
+
+.PHONY : BPTree.o
+
+# target to build an object file
+BPTree.cpp.o:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTree.cpp.o
+.PHONY : BPTree.cpp.o
+
+BPTree.i: BPTree.cpp.i
+
+.PHONY : BPTree.i
+
+# target to preprocess a source file
+BPTree.cpp.i:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTree.cpp.i
+.PHONY : BPTree.cpp.i
+
+BPTree.s: BPTree.cpp.s
+
+.PHONY : BPTree.s
+
+# target to generate assembly for a file
+BPTree.cpp.s:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTree.cpp.s
+.PHONY : BPTree.cpp.s
+
+BPTreeKey.o: BPTreeKey.cpp.o
+
+.PHONY : BPTreeKey.o
+
+# target to build an object file
+BPTreeKey.cpp.o:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.o
+.PHONY : BPTreeKey.cpp.o
+
+BPTreeKey.i: BPTreeKey.cpp.i
+
+.PHONY : BPTreeKey.i
+
+# target to preprocess a source file
+BPTreeKey.cpp.i:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.i
+.PHONY : BPTreeKey.cpp.i
+
+BPTreeKey.s: BPTreeKey.cpp.s
+
+.PHONY : BPTreeKey.s
+
+# target to generate assembly for a file
+BPTreeKey.cpp.s:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.s
+.PHONY : BPTreeKey.cpp.s
+
+BPTreeNode.o: BPTreeNode.cpp.o
+
+.PHONY : BPTreeNode.o
+
+# target to build an object file
+BPTreeNode.cpp.o:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.o
+.PHONY : BPTreeNode.cpp.o
+
+BPTreeNode.i: BPTreeNode.cpp.i
+
+.PHONY : BPTreeNode.i
+
+# target to preprocess a source file
+BPTreeNode.cpp.i:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.i
+.PHONY : BPTreeNode.cpp.i
+
+BPTreeNode.s: BPTreeNode.cpp.s
+
+.PHONY : BPTreeNode.s
+
+# target to generate assembly for a file
+BPTreeNode.cpp.s:
+	$(MAKE) -f CMakeFiles/monsterSQL.dir/build.make CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.s
+.PHONY : BPTreeNode.cpp.s
+
 api.o: api.cc.o
 
 .PHONY : api.o
@@ -402,6 +483,15 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... monsterSQL"
+	@echo "... BPTree.o"
+	@echo "... BPTree.i"
+	@echo "... BPTree.s"
+	@echo "... BPTreeKey.o"
+	@echo "... BPTreeKey.i"
+	@echo "... BPTreeKey.s"
+	@echo "... BPTreeNode.o"
+	@echo "... BPTreeNode.i"
+	@echo "... BPTreeNode.s"
 	@echo "... api.o"
 	@echo "... api.i"
 	@echo "... api.s"

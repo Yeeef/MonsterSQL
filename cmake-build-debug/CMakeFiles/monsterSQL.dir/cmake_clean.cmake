@@ -1,4 +1,7 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/monsterSQL.dir/BPTree.cpp.o"
+  "CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.o"
+  "CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.o"
   "CMakeFiles/monsterSQL.dir/api.cc.o"
   "CMakeFiles/monsterSQL.dir/buffer.cc.o"
   "CMakeFiles/monsterSQL.dir/catalog.cc.o"

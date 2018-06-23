@@ -82,6 +82,24 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/yee/Desktop/monster-sql/MiniSQL/BPTree.cpp">
+			<Option target="monsterSQL"/>
+		</Unit>
+		<Unit filename="/Users/yee/Desktop/monster-sql/MiniSQL/BPTree.h">
+			<Option target="monsterSQL"/>
+		</Unit>
+		<Unit filename="/Users/yee/Desktop/monster-sql/MiniSQL/BPTreeKey.cpp">
+			<Option target="monsterSQL"/>
+		</Unit>
+		<Unit filename="/Users/yee/Desktop/monster-sql/MiniSQL/BPTreeKey.h">
+			<Option target="monsterSQL"/>
+		</Unit>
+		<Unit filename="/Users/yee/Desktop/monster-sql/MiniSQL/BPTreeNode.cpp">
+			<Option target="monsterSQL"/>
+		</Unit>
+		<Unit filename="/Users/yee/Desktop/monster-sql/MiniSQL/BPTreeNode.h">
+			<Option target="monsterSQL"/>
+		</Unit>
 		<Unit filename="/Users/yee/Desktop/monster-sql/MiniSQL/api.cc">
 			<Option target="monsterSQL"/>
 		</Unit>

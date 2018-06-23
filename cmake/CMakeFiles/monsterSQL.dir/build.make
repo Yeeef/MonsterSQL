@@ -57,9 +57,48 @@ include CMakeFiles/monsterSQL.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/monsterSQL.dir/flags.make
 
+CMakeFiles/monsterSQL.dir/BPTree.cpp.o: CMakeFiles/monsterSQL.dir/flags.make
+CMakeFiles/monsterSQL.dir/BPTree.cpp.o: ../BPTree.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/monsterSQL.dir/BPTree.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/BPTree.cpp.o -c /Users/yee/Desktop/monster-sql/MiniSQL/BPTree.cpp
+
+CMakeFiles/monsterSQL.dir/BPTree.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/monsterSQL.dir/BPTree.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yee/Desktop/monster-sql/MiniSQL/BPTree.cpp > CMakeFiles/monsterSQL.dir/BPTree.cpp.i
+
+CMakeFiles/monsterSQL.dir/BPTree.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/monsterSQL.dir/BPTree.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yee/Desktop/monster-sql/MiniSQL/BPTree.cpp -o CMakeFiles/monsterSQL.dir/BPTree.cpp.s
+
+CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.o: CMakeFiles/monsterSQL.dir/flags.make
+CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.o: ../BPTreeKey.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.o -c /Users/yee/Desktop/monster-sql/MiniSQL/BPTreeKey.cpp
+
+CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yee/Desktop/monster-sql/MiniSQL/BPTreeKey.cpp > CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.i
+
+CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yee/Desktop/monster-sql/MiniSQL/BPTreeKey.cpp -o CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.s
+
+CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.o: CMakeFiles/monsterSQL.dir/flags.make
+CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.o: ../BPTreeNode.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.o -c /Users/yee/Desktop/monster-sql/MiniSQL/BPTreeNode.cpp
+
+CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/yee/Desktop/monster-sql/MiniSQL/BPTreeNode.cpp > CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.i
+
+CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/yee/Desktop/monster-sql/MiniSQL/BPTreeNode.cpp -o CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.s
+
 CMakeFiles/monsterSQL.dir/api.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/api.cc.o: ../api.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/monsterSQL.dir/api.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/monsterSQL.dir/api.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/api.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/api.cc
 
 CMakeFiles/monsterSQL.dir/api.cc.i: cmake_force
@@ -72,7 +111,7 @@ CMakeFiles/monsterSQL.dir/api.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/buffer.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/buffer.cc.o: ../buffer.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/monsterSQL.dir/buffer.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/monsterSQL.dir/buffer.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/buffer.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/buffer.cc
 
 CMakeFiles/monsterSQL.dir/buffer.cc.i: cmake_force
@@ -85,7 +124,7 @@ CMakeFiles/monsterSQL.dir/buffer.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/catalog.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/catalog.cc.o: ../catalog.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/monsterSQL.dir/catalog.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/monsterSQL.dir/catalog.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/catalog.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/catalog.cc
 
 CMakeFiles/monsterSQL.dir/catalog.cc.i: cmake_force
@@ -98,7 +137,7 @@ CMakeFiles/monsterSQL.dir/catalog.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/config.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/config.cc.o: ../config.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/monsterSQL.dir/config.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/monsterSQL.dir/config.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/config.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/config.cc
 
 CMakeFiles/monsterSQL.dir/config.cc.i: cmake_force
@@ -111,7 +150,7 @@ CMakeFiles/monsterSQL.dir/config.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/file.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/file.cc.o: ../file.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/monsterSQL.dir/file.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/monsterSQL.dir/file.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/file.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/file.cc
 
 CMakeFiles/monsterSQL.dir/file.cc.i: cmake_force
@@ -124,7 +163,7 @@ CMakeFiles/monsterSQL.dir/file.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/index.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/index.cc.o: ../index.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/monsterSQL.dir/index.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/monsterSQL.dir/index.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/index.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/index.cc
 
 CMakeFiles/monsterSQL.dir/index.cc.i: cmake_force
@@ -137,7 +176,7 @@ CMakeFiles/monsterSQL.dir/index.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/interpreter.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../interpreter.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/monsterSQL.dir/interpreter.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/monsterSQL.dir/interpreter.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/interpreter.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/interpreter.cc
 
 CMakeFiles/monsterSQL.dir/interpreter.cc.i: cmake_force
@@ -150,7 +189,7 @@ CMakeFiles/monsterSQL.dir/interpreter.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/main.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/main.cc.o: ../main.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/monsterSQL.dir/main.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/monsterSQL.dir/main.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/main.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/main.cc
 
 CMakeFiles/monsterSQL.dir/main.cc.i: cmake_force
@@ -163,7 +202,7 @@ CMakeFiles/monsterSQL.dir/main.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/minisql.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/minisql.cc.o: ../minisql.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/monsterSQL.dir/minisql.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/monsterSQL.dir/minisql.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/minisql.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/minisql.cc
 
 CMakeFiles/monsterSQL.dir/minisql.cc.i: cmake_force
@@ -176,7 +215,7 @@ CMakeFiles/monsterSQL.dir/minisql.cc.s: cmake_force
 
 CMakeFiles/monsterSQL.dir/record.cc.o: CMakeFiles/monsterSQL.dir/flags.make
 CMakeFiles/monsterSQL.dir/record.cc.o: ../record.cc
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/monsterSQL.dir/record.cc.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/monsterSQL.dir/record.cc.o"
 	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/monsterSQL.dir/record.cc.o -c /Users/yee/Desktop/monster-sql/MiniSQL/record.cc
 
 CMakeFiles/monsterSQL.dir/record.cc.i: cmake_force
@@ -189,6 +228,9 @@ CMakeFiles/monsterSQL.dir/record.cc.s: cmake_force
 
 # Object files for target monsterSQL
 monsterSQL_OBJECTS = \
+"CMakeFiles/monsterSQL.dir/BPTree.cpp.o" \
+"CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.o" \
+"CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.o" \
 "CMakeFiles/monsterSQL.dir/api.cc.o" \
 "CMakeFiles/monsterSQL.dir/buffer.cc.o" \
 "CMakeFiles/monsterSQL.dir/catalog.cc.o" \
@@ -203,6 +245,9 @@ monsterSQL_OBJECTS = \
 # External object files for target monsterSQL
 monsterSQL_EXTERNAL_OBJECTS =
 
+monsterSQL: CMakeFiles/monsterSQL.dir/BPTree.cpp.o
+monsterSQL: CMakeFiles/monsterSQL.dir/BPTreeKey.cpp.o
+monsterSQL: CMakeFiles/monsterSQL.dir/BPTreeNode.cpp.o
 monsterSQL: CMakeFiles/monsterSQL.dir/api.cc.o
 monsterSQL: CMakeFiles/monsterSQL.dir/buffer.cc.o
 monsterSQL: CMakeFiles/monsterSQL.dir/catalog.cc.o
@@ -215,7 +260,7 @@ monsterSQL: CMakeFiles/monsterSQL.dir/minisql.cc.o
 monsterSQL: CMakeFiles/monsterSQL.dir/record.cc.o
 monsterSQL: CMakeFiles/monsterSQL.dir/build.make
 monsterSQL: CMakeFiles/monsterSQL.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable monsterSQL"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/yee/Desktop/monster-sql/MiniSQL/cmake/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable monsterSQL"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/monsterSQL.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
