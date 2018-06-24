@@ -168,15 +168,18 @@ void BufferManager::DeleteBlockByFile(const string &fileName)
     for (int i = 0; i < max_block_count; i++)
     {
         Block *block = finder->get_block();
+        if(block == nullptr)
+            continue;
         string blockFileName = block->get_filename();
         int block_id = block->get_blockID();
         string map_name;
         getMapName(map_name, fileName, block_id);
         // 不会析构我的 BufferNode *
-        Name2Node.erase(map_name);
+
 
         if (blockFileName == fileName)
         {
+            Name2Node.erase(map_name);
             delete block;
             finder->set_block(nullptr);
         }

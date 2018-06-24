@@ -8,22 +8,93 @@
  * 
  */
 
+/* 打印出rawdata的内容
+ *
+ */
+void Table::PrintRawdata(const char * rawdata) const
+{
+    for(auto AttriName : attri_name)
+    {
+        Attribute Attri = Name2Attri.at(AttriName);
+        int Pos = Name2Pos.at(AttriName);
+        int type = Attri.get_type();
+        int length = Attri.get_length();
+        string PrintData;
+        switch(type)
+        {
+            case TYPE_INT:
+            {
+                int data = Method::rawdata2int(rawdata + Pos);
+                stringstream ss;
+                ss << data;
+                ss >> PrintData;
 
-bool Table::GetAttriByName(const string & attri_name, Attribute & attri) const throw(Error)
+                break;
+            }
+            case TYPE_FLOAT:
+            {
+                float data = Method::rawdata2float(rawdata+Pos);
+                stringstream ss;
+                ss << data;
+                ss >> PrintData;
+            }
+            default:
+            {
+                Method::rawdata2string(rawdata, length, PrintData);
+            }
+        }
+        cout << PrintData << "\t";
+    }
+}
+/* 目的：判断rawdata，是否符合所有条件
+ * 通过attri, 分割
+ * 
+ */
+bool Table::isSatisfyAllCondition(const char *rawdata, const vector<string> &attribute_name,
+                                  const vector<int> &condition, const vector<string> &operand) const 
+{
+    for (int i = 0; i < attribute_name.size(); i++)
+    {
+        string AttriName = attribute_name.at(i);
+        Attribute Attri = Name2Attri.at(AttriName);
+        int Pos = Name2Pos.at(AttriName);
+        int length = Attri.get_length();
+        int type = Attri.get_type();
+        //提取出对应于attribute的一段内容
+        char AttriData[length];
+        memcpy(AttriData, rawdata + Pos, length);
+        if(Method::isSatisfyConditon(AttriData, condition.at(i), operand.at(i), type) == false)
+            return false;
+        
+    }
+    return true;
+}
+
+void Table::setAttriPos()
+{
+    int bias = 0;
+    for (auto AttriName : attri_name)
+    {
+        Name2Pos.insert({AttriName, bias});
+        Attribute attri = Name2Attri.at(AttriName);
+        bias += attri.get_length();
+    }
+}
+
+bool Table::GetAttriByName(const string &attri_name, Attribute &attri) const throw(Error)
 {
     attri = Name2Attri.at(attri_name);
 }
 
-bool Table::isAttribute(const string & attri_name) const throw(Error)
+bool Table::isAttribute(const string &attri_name) const throw(Error)
 {
     auto search = Name2Attri.find(attri_name);
 
     // 不存在这个Attribute
-    if(search == Name2Attri.end())
+    if (search == Name2Attri.end())
     {
         string err = "[Table::isAttribute] '" + attri_name + "' doesn't exist";
         throw Error(err);
-
     }
     return true;
 }
@@ -88,7 +159,7 @@ bool Table::isValidInput(const vector<string> &insert_data,
     /* parse data */
     for (int i = 0; i < attribute_count; i++)
     {
-        char *rawdata = new char [Method::getLengthFromType(type.at(i)) ];
+        char *rawdata = new char[Method::getLengthFromType(type.at(i))];
         Method::string2rawdata(insert_data.at(i), type.at(i), rawdata);
         // 翻译好的数据加入 raw_vec
         raw_Vec.push_back(rawdata);
@@ -169,7 +240,7 @@ bool Method::isEqual(const char *a, const char *b, const int length)
     return isequal;
 }
 
-void Method::string2rawdata(const string & str, const int type, char * rawdata)
+void Method::string2rawdata(const string &str, const int type, char *rawdata)
 {
     stringstream ss;
     ss << str;
@@ -256,12 +327,14 @@ const int Method::getLengthFromType(int type)
 
 void Method::createFile(const string &file_name, int record_length)
 {
+    record_length++;
     FILE *file = fopen(Method::AbsolutePath(file_name).c_str(), "wb");
     if (file == nullptr)
     {
         cout << "[Method::createFile] cannot open file '" << file_name << "' " << endl;
         return;
     }
+
     int first_free_record_id = -1;
     int record_count = 0;
     fwrite(&record_length, 4, 1, file);
@@ -300,6 +373,199 @@ string Method::AbsolutePath(const string &file_name)
 void Method::setIndexFromTableAttri(const string &table_name, const string &attri_name, string &index_name)
 {
     index_name = table_name + attri_name;
+}
+
+int Method::GetLogicalLength(const int PhysicLength)
+{
+    return (PhysicLength - 1);
+}
+
+bool Method::isSatisfy(const int data, const int cond, const int operand)
+{
+    switch (cond)
+    {
+        case COND_EQ:
+        {
+            if (data != operand)
+                return false;
+
+            break;
+        }
+        case COND_GE:
+        {
+            if (data < operand)
+                return false;
+            break;
+        }
+        case COND_LE:
+        {
+            if (data > operand)
+                return false;
+            break;
+        }
+        case COND_GT:
+        {
+            if (data <= operand)
+                return false;
+            break;
+        }
+        case COND_LT:
+        {
+            if (data >= operand)
+                return false;
+            break;
+        }
+        case COND_NE:
+        {
+            if (data == operand)
+                return false;
+            break;
+        }
+        default:
+        {
+            cout << "Wrong Cond: '" << cond << "'" << endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool Method::isSatisfy(const float data, const int cond, const float operand)
+{
+    switch (cond)
+    {
+        case COND_EQ:
+        {
+            if (data != operand)
+                return false;
+
+            break;
+        }
+        case COND_GE:
+        {
+            if (data < operand)
+                return false;
+            break;
+        }
+        case COND_LE:
+        {
+            if (data > operand)
+                return false;
+            break;
+        }
+        case COND_GT:
+        {
+            if (data <= operand)
+                return false;
+            break;
+        }
+        case COND_LT:
+        {
+            if (data >= operand)
+                return false;
+            break;
+        }
+        case COND_NE:
+        {
+            if (data == operand)
+                return false;
+            break;
+        }
+        default:
+        {
+            cout << "Wrong Cond: '" << cond << "'" << endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+bool Method::isSatisfy(const string & data, const int cond, const string & operand)
+{
+        switch (cond)
+    {
+        case COND_EQ:
+        {
+            if (data != operand)
+                return false;
+
+            break;
+        }
+        case COND_GE:
+        {
+            if (data < operand)
+                return false;
+            break;
+        }
+        case COND_LE:
+        {
+            if (data > operand)
+                return false;
+            break;
+        }
+        case COND_GT:
+        {
+            if (data <= operand)
+                return false;
+            break;
+        }
+        case COND_LT:
+        {
+            if (data >= operand)
+                return false;
+            break;
+        }
+        case COND_NE:
+        {
+            if (data == operand)
+                return false;
+            break;
+        }
+        default:
+        {
+            cout << "Wrong Cond: '" << cond << "'" << endl;
+            return false;
+        }
+    }
+    
+}
+
+bool Method::isSatisfyConditon(const char *rawdata, const int cond, const string &operand, const int type)
+{
+
+    switch (type)
+    {
+    case TYPE_INT:
+    {
+        int data = Method::rawdata2int(rawdata);
+        char Operand[Method::getLengthFromType(type)];
+        Method::string2rawdata(operand, type, Operand);
+        int operandValue = Method::rawdata2int(Operand);
+        return Method::isSatisfy(data, cond, operandValue);
+        break;
+    
+    }
+
+        
+    case TYPE_FLOAT:
+    {
+        float data = Method::rawdata2float(rawdata);
+        char Operand[Method::getLengthFromType(type)];
+        Method::string2rawdata(operand, type, Operand);
+        float operandValue = Method::rawdata2int(Operand);
+        return Method::isSatisfy(data, cond , operandValue);
+        break;
+    }
+    default:
+    {
+        string data;
+        Method::rawdata2string(rawdata, Method::getLengthFromType(type), data);
+        string operandValue(operand);
+        return Method::isSatisfy(data, cond, operandValue);
+    }
+    }
+    return true;
 }
 
 /* ---------------------------------------------*/

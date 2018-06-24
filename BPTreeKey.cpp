@@ -4,9 +4,8 @@
 
 #include "BPTreeKey.h"
 #include <cmath>
-BPTreeKey::BPTreeKey(const char *raw_data, ptr& Pointer, int dataType): dataType(dataType)
+BPTreeKey::BPTreeKey(const char *raw_data, int pointerID, int dataType): dataType(dataType), pointerID(pointerID)
 {
-    this->Pointer.set_id(Pointer.get_id());
     int keyLength = Method::getLengthFromType(dataType);
     if(raw_data != nullptr)
     {
@@ -21,30 +20,13 @@ BPTreeKey::BPTreeKey(const char *raw_data, ptr& Pointer, int dataType): dataType
 
 
 }
-
-BPTreeKey::BPTreeKey(const char *raw_data, int id, int data_type):dataType(data_type) {
-
-    Pointer.set_id(id);
-    int keyLength = Method::getLengthFromType(dataType);
-
-    if(raw_data != nullptr)
-    {
-        rawData = new char[keyLength];
-        memcpy(rawData,raw_data, keyLength);
-    } else
-    {
-        rawData = nullptr;
-    }
-
-
     //rawData2key();
 
-}
 
 BPTreeKey::BPTreeKey(const char *raw_data, int data_type) :dataType(data_type)
 {
 
-    Pointer = -1;
+    pointerID = -1;
     int keyLength = Method::getLengthFromType(dataType);
     if(raw_data != nullptr)
     {
@@ -137,13 +119,21 @@ bool BPTreeKey::operator!=(const BPTreeKey &entry) {
 
 
 void BPTreeKey::setKey(const char *raw_data, int nodeID) {
-    memcpy(rawData,raw_data, Method::getLengthFromType(dataType));
-    Pointer.set_id(nodeID);
+    if(raw_data == nullptr)
+    {
+        rawData = nullptr;
+    }else
+        memcpy(rawData,raw_data, Method::getLengthFromType(dataType));
+
+    pointerID = nodeID;
 
 }
 
 void BPTreeKey::setKey(const char *raw_data) {
-    memcpy(rawData,raw_data, Method::getLengthFromType(dataType));
+    if(raw_data == nullptr)
+        rawData = nullptr;
+    else
+        memcpy(rawData,raw_data, Method::getLengthFromType(dataType));
 }
 
 BPTreeKey& BPTreeKey::operator=(const BPTreeKey &entry) {
@@ -151,7 +141,7 @@ BPTreeKey& BPTreeKey::operator=(const BPTreeKey &entry) {
 }
 
 BPTreeKey::BPTreeKey(const BPTreeKey &copy) :dataType(copy.dataType){
-    Pointer.set_id(copy.Pointer.get_id());
+    pointerID = copy.pointerID;
     int keyLength = Method::getLengthFromType(dataType);
 
     if(copy.rawData == nullptr)

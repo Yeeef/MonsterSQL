@@ -8,9 +8,10 @@
  * 构造了一个空结点
  * 即node里没有存任何东西
  */
-BPTreeNode::BPTreeNode(const char *_filename, int _id, int _keyLength, bool isLeaf, int nextNodeId):
-        fileName(_filename), nodeId(_id), keyLength(_keyLength), isLeaf(isLeaf)
+BPTreeNode::BPTreeNode(const char *_filename, int _id, int data_type, bool isLeaf, int nextNodeId):
+        fileName(_filename), nodeId(_id), data_type(data_type), isLeaf(isLeaf)
 {
+    keyLength = Method::getLengthFromType(data_type);
     isDirty = true;
     isRemoved = false;
     nodeSize = 0;
@@ -24,11 +25,11 @@ BPTreeNode::BPTreeNode(const char *_filename, int _id, int _keyLength, bool isLe
 }
 
 
-BPTreeNode::BPTreeNode(const char *_filename, int _id, int _keyLength):
-        fileName(_filename), nodeId(_id), keyLength(_keyLength)
+BPTreeNode::BPTreeNode(const char *_filename, int _id, int data_type):
+        fileName(_filename), nodeId(_id), data_type(data_type)
 {
 
-
+    keyLength = Method::getLengthFromType(data_type);
     //调用Buffer Manager去得到data
     BufferManager& manager = MiniSQL::get_buffer_manager();
     Block* block = manager.getBlock(_filename, nodeId);
@@ -45,7 +46,7 @@ BPTreeNode::BPTreeNode(const char *_filename, int _id, int _keyLength):
     nodeSize = Method::rawdata2int(temp);
 
     //更新nodecapability
-    nodeCapability = ((4096 - 4) / (keyLength + 4));
+    nodeCapability = ((4096 - 8) / (keyLength + 4));
 
 
     //更新第一个指针，
@@ -53,7 +54,7 @@ BPTreeNode::BPTreeNode(const char *_filename, int _id, int _keyLength):
     //对于非叶子结点放下一层的nodeID
     memcpy(temp, data+4, 4);
     BPTreeKey key(nullptr, Method::rawdata2int(temp), data_type);
-
+    keys.push_back(key);
 
     /*
      * 其实都是一样的，无需区分对一个非叶子结点的key，它也是有pointer的，也是有key的
@@ -69,6 +70,7 @@ BPTreeNode::BPTreeNode(const char *_filename, int _id, int _keyLength):
         //把key+id放进vector
         BPTreeKey key(keyPtr, Method::rawdata2int(temp), data_type);
         keys.push_back(key);
+        key.setKey(nullptr);
         bias += keyLength + 4;
     }
     delete[] temp;
@@ -87,12 +89,14 @@ BPTreeNode::~BPTreeNode() {
         memcpy(data, &nodeSize, 4);
 
         //把所有数据存进去
-        memcpy(data + 4, keys[0].getPointerRawData(), 4);
+        int recordPointer = keys[0].getPointer();
+        memcpy(data + 4, &(recordPointer), 4);
         int bias = 8;
         for(int i=1; i <= nodeSize; i++)
         {
             memcpy(data + bias, keys[i].getKeyRawData(), keyLength);
-            memcpy(data + bias + keyLength, keys[i].getPointerRawData(), 4);
+            recordPointer = keys[i].getPointer();
+            memcpy(data + bias + keyLength, &recordPointer, 4);
             bias += keyLength + 4;
         }
         block->set_dirty(true);
@@ -173,7 +177,7 @@ int BPTreeNode::findPosition_UpperBound(const BPTreeKey &key) {
  */
 void BPTreeNode::split(int nextID, BPTreeKey &entry, int nodeID) {
 
-    BPTreeNode* newNode = new BPTreeNode(fileName.c_str(),nodeID, keyLength, isLeaf, nextID);
+    BPTreeNode* newNode = new BPTreeNode(fileName.c_str(),nodeID, data_type, isLeaf, nextID);
 
     int start = 1;
     /*
@@ -229,14 +233,14 @@ int BPTreeNode::deleteEntry(int pos) {
 void BPTreeNode::mergeVec(vector<ptr> &res, int pos) {
     for(int i=1; i<=pos; i++)
     {
-        res.push_back(keys[i].getPtrClass());
+        res.push_back(keys[i].getPointer());
     }
 }
 
 void BPTreeNode::mergeVecRight(vector<ptr> &res, int pos) {
     for(int i=pos; i<=nodeSize; i++)
     {
-        res.push_back(keys[i].getPtrClass());
+        res.push_back(keys[i].getPointer());
     }
 }
 

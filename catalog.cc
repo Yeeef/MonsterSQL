@@ -145,6 +145,7 @@ bool CatalogManager::create_table(const string &table_name, const vector<Attribu
 
     }
     // table信息填充完毕
+    new_table->setAttriPos();
     new_table->set_record_length(record_length);
     Name2Table.insert({table_name, new_table});
 
@@ -306,8 +307,7 @@ bool CatalogManager::drop_index(const string & index_name) throw(Error)
     int addr = IndexName2Addr.at(index_name);
     IndexFile.delete_record_ByAddr(addr);
     IndexName2Addr.erase(index_name);
-
-
+    return true;
 }
 
 void CatalogManager::LoadAttriInfo()
@@ -351,7 +351,7 @@ void CatalogManager::LoadAttriInfo()
                 table->set_uniqueSet(attri_name);
             }
         }
-        
+        table->setAttriPos();  
         table->set_record_length(record_length);
     }
 }
@@ -362,6 +362,7 @@ void CatalogManager::print()
     {
         Table * table = tablemap.second;
         cout << tablemap.first << " ";
+        cout << table->get_record_length() << " ";
         table->print();
     }
     cout << endl;

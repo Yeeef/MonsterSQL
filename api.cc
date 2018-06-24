@@ -61,7 +61,6 @@ bool API::drop_table(const string &table_name) const throw(Error)
     }
 }
 
-
 /* TODO
  * rawdata 应该是一个 vector <char*> 
  * catalogmanger里面内建一个map访问更快
@@ -74,21 +73,20 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
 
     bool ret;
 
-
     // 获取catalogmanager
     CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
     // 获取recordmanager
     RecordManager &recordmanager = MiniSQL::get_record_manager();
     // 获取 indexmanager
     IndexManager &indexmanager = MiniSQL::get_index_manager();
-    BufferManager & bufferManager = MiniSQL::get_buffer_manager();
+    BufferManager &bufferManager = MiniSQL::get_buffer_manager();
     vector<char *> raw_Vec;
     char *rawdata;
 
     try
     {
         // 从catalog获得table
-        const Table * table = catalogmanager.get_table(table_name);
+        const Table *table = catalogmanager.get_table(table_name);
 
         // parse data
         rawdata = new char[table->get_record_length()];
@@ -101,16 +99,14 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
 
         //我还需要知道插入后的 record_id
         // Pointer 就是我要的信息
-        
-        int addr = recordmanager.insert(table_name, rawdata);
-        ptr Pointer(addr); 
 
+        const int addr = recordmanager.insert(table_name, rawdata);
 
         for (int i = 0; i < table->attri_name.size(); i++)
         {
             string index_name;
             if (table->isIndex(table->attri_name.at(i), index_name))
-                indexmanager.insert(index_name, raw_Vec.at(i), type.at(i), Pointer);
+                indexmanager.insert(index_name, raw_Vec.at(i), type.at(i), addr);
         }
 
         ret = true;
@@ -132,86 +128,136 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
 bool API::Delete(const string &table_name, const vector<string> &attribute_name,
                  const vector<int> &condition, const vector<string> &operand) const throw(Error)
 {
-    return false;
-}
-
-/*
- * 检查attribute_name是否都能对上号 ✅
- * 拿出所有符合条件的record同时利用 unordered_set 进行筛选
- * 针对等于号条件进行筛选
- * keydata没有new
- * 
- */
-bool API::select(const string &table_name, const vector<string> & attribute_name,
-                 const vector<int> & condition, const vector<string> & operand) const throw(Error)
-{
-    /*
-    CatalogManager & catalogmanager = MiniSQL::get_catalog_manager();
-    RecordManager & recordmanager = MiniSQL::get_record_manager();
-    IndexManager & indexmanager = MiniSQL::get_index_manager();
+    CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
+    RecordManager &recordmanager = MiniSQL::get_record_manager();
+    IndexManager &indexmanager = MiniSQL::get_index_manager();
 
     try
     {
-        const Table * table = catalogmanager.get_table(table_name);
+        /* 错误检查 */
+        const Table *table = catalogmanager.get_table(table_name);
         // 检查attri是否都存在
-        for(auto attri_name : attribute_name)
+        for (auto attri_name : attribute_name)
         {
             // 这个函数会直接抛出错误
             table->isAttribute(attri_name);
         }
 
+        /* --------------------------------------------------- */
+
         int size = attribute_name.size();
-        
-        unordered_map <int, const char *> addr_record; //通过这个hash来判断是否是出现过的addr_set?
-        for(int i = 0; i < size; i++)
+
+        /* 根据vector attribute_name 来一个个向下看, 找有没有能用index的 */
+        /* 只要找到一个就立即开始做？ */
+        for (int i = 0; i < size; i++)
         {
+            if (condition.at(i) != COND_EQ)
+                continue;
+
+            string index_name;
+            if (!table->isIndex(attribute_name.at(i), index_name))
+                continue;
+
             Attribute attri("", -1, 0);
             table->GetAttriByName(attribute_name.at(i), attri);
-            // 注意new/delete
             // keydata是对应operand的rawdata
             //翻译keydata
             char keydata[attri.get_length()];
+            // 比如 a > 1，我现在要把这个1翻译出来
             Method::string2rawdata(operand.at(i), attri.get_type(), keydata);
 
-            if(condition.at(i) == COND_EQ)
+            //找到绝对地址
+            int addr = indexmanager.find(index_name, keydata, attri.get_type());
+            //调用record manager
+            const char *rawdata = recordmanager.GetRecordByAddr(table_name, addr);
+            // 判断是否符合所有要求, 如果满足要求，直接删除
+            if (table->isSatisfyAllCondition(rawdata, attribute_name, condition, operand) == true)
             {
-                string index_name;
-                // 有索引
-                if(table->isIndex(attribute_name.at(i), index_name))
-                {
-                    ptr Pointer;
-                    //找到绝对地址
-                    indexmanager.find(index_name, keydata, attri.get_type() , Pointer);
-                    int addr = Pointer.get_id();  
-                    //加入映射中去
-                    addr_record.insert({addr, recordmanager.GetRecordByAddr(table_name, addr)}); 
-                }
-                else
-                {
-                    //利用record暴力搜索
-                    int addr;
-                    const char * content = recordmanager.select(table_name, attri.get_name(), COND_EQ, keydata, &addr);
-                    addr_record.insert({addr, content});                   
-                }
+                recordmanager.DeleteRecordByAddr(table_name, addr);
             }
+            return true;
         }
-
-        // 开始把所有记录拿出来
-
-
-
-
-
+        //利用record暴力搜索，这里就不一定是唯一的了，不需要传入vector, 结果实时打印打印结果最好实时打印还是？
+        return recordmanager.Delete(table_name, attribute_name, condition, operand);
     }
-    catch(Error err)
+    catch (Error err)
     {
         err.print_error();
         return false;
-
     }
-     */
+}
 
+/*
+ * 检查attribute_name是否都能对上号 ✅
+ * 之前的思路有问题：应该是看看有没有能用index，如果能用，那我就不需要recordmanager了，找出来一条，然后判断是否符合所有条件即可 ✅
+ * 寻找所有条件里有没有能用index的 ✅
+ * 暂时没有让index实现scale find
+ * 
+ */
+bool API::select(const string &table_name, const vector<string> &attribute_name,
+                 const vector<int> &condition, const vector<string> &operand) const throw(Error)
+{
 
+    CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
+    RecordManager &recordmanager = MiniSQL::get_record_manager();
+    IndexManager &indexmanager = MiniSQL::get_index_manager();
+
+    try
+    {
+        /* 错误检查 */
+        const Table *table = catalogmanager.get_table(table_name);
+        // 检查attri是否都存在
+        for (auto attri_name : attribute_name)
+        {
+            // 这个函数会直接抛出错误
+            table->isAttribute(attri_name);
+        }
+
+        /* --------------------------------------------------- */
+
+        int size = attribute_name.size();
+
+        unordered_map<int, const char *> addr_record; //通过这个hash来判断是否是出现过的addr_set?
+        unordered_set<int> addr_exist;
+
+        /* 根据vector attribute_name 来一个个向下看, 找有没有能用index的 */
+        /* 只要找到一个就立即开始做？ */
+        for (int i = 0; i < size; i++)
+        {
+            if (condition.at(i) != COND_EQ)
+                continue;
+
+            string index_name;
+            if (!table->isIndex(attribute_name.at(i), index_name))
+                continue;
+
+            Attribute attri("", -1, 0);
+            table->GetAttriByName(attribute_name.at(i), attri);
+            // keydata是对应operand的rawdata
+            //翻译keydata
+            char keydata[attri.get_length()];
+            // 比如 a > 1，我现在要把这个1翻译出来
+            Method::string2rawdata(operand.at(i), attri.get_type(), keydata);
+
+            //找到绝对地址
+            int addr = indexmanager.find(index_name, keydata, attri.get_type());
+            //调用record manager
+            const char *rawdata = recordmanager.GetRecordByAddr(table_name, addr);
+            // 判断是否符合所有要求, 如果满足要求，直接打印出来
+            if (table->isSatisfyAllCondition(rawdata, attribute_name, condition, operand) == true)
+            {
+                table->PrintRawdata(rawdata);
+            }
+            return true;
+        }
+        //利用record暴力搜索，这里就不一定是唯一的了，不需要传入vector, 结果实时打印打印结果最好实时打印还是？
+        return recordmanager.select(table_name, attribute_name, condition, operand);
+    }
+    catch (Error err)
+    {
+        err.print_error();
+        return false;
+    }
 }
 
 /* 这个函数需要做的是
@@ -223,7 +269,7 @@ bool API::create_index(const string &table_name, const string &attribute_name,
     try
     {
         CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
-        IndexManager & indexManager = MiniSQL::get_index_manager();
+        IndexManager &indexManager = MiniSQL::get_index_manager();
         catalogmanager.create_index(index_name, table_name, attribute_name);
         indexManager.createIndex(table_name, attribute_name, index_name);
     }

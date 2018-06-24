@@ -53,7 +53,11 @@ class Method
     static void deleteFile(const string & file_name);
     static bool isFileExist(const string & file_name);
     static bool isEqual(const char * a, const char * b, const int length);
-    
+    static int GetLogicalLength(const int PhysicLength);
+    static bool isSatisfyConditon(const char * rawdata, const int cond, const string & operand, const int type);
+    static bool isSatisfy(const int data, const int cond, const int operand);
+    static bool isSatisfy(const float data, const int cond, const float operand);
+    static bool isSatisfy(const string & data, const int cond, const string & operand);
 
 };
 
@@ -191,6 +195,8 @@ class Index
  * attri_count?
  * Attri2Index的行为一定要格外注意
  * Name2Attri可以改成指针
+ * 添加 Name2Pos 需要在两个地方修改：1、catalog构造Table 2、create table ✅
+ * 
  */
 class Table
 {
@@ -199,6 +205,7 @@ class Table
     int record_length; //通过计算得来,这个是实在的记录的一个长度
     int attribute_count; // 通过上一步metadata已经填好
     unordered_map <string, Attribute> Name2Attri; //名字索引到属性
+    unordered_map <string, int > Name2Pos; // 名字索引一个相对起始地址
     //下面的index*不需要我来delete，上一步已经填好
     unordered_map <string, Index*> Attri2Index; //属性名索引到Index名
     unordered_set <string> UniqueAttri;
@@ -212,6 +219,10 @@ class Table
     Table(const string & table_name, const int attribute_count) 
     : table_name(table_name), attribute_count(attribute_count) { }
 
+    void setAttriPos();
+    void PrintRawdata(const char * rawdata) const;
+    bool isSatisfyAllCondition(const char * rawdata, const vector<string> & attribute_name,
+    const vector<int> & condition, const vector<string> & operand) const ;
     bool isIndex(const string & attri_name, string & index_name) const
     {
         auto search = Attri2Index.find(attri_name);

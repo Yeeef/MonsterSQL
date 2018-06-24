@@ -8,14 +8,14 @@
  * getRecordByID的越界检查能不能做？
  * 删除的时候不会record_count--
  * 注意指针的重置
- * 
+ * 增加 logical_record_length
  */
 FileManager::FileManager(string file_name)
 {
 
     this->file_name = file_name;
     //向buffer manager请求 文件名的 第一个block
-    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+    BufferManager &buffermanager = MiniSQL::get_buffer_manager();
     // 0th block 存储 file metadata: record_length, first, record_count
     Block *meta_block = buffermanager.getBlock(file_name, 0);
 
@@ -23,6 +23,7 @@ FileManager::FileManager(string file_name)
 
     // record_length record_count first_free_id(absolute)
     record_length = Method::rawdata2int(content);
+    LogicalRecordLength = Method::GetLogicalLength(record_length);
     first_free_record_addr = Method::rawdata2int(content + INT_LENGTH);
 
     // 这个不一定要
@@ -42,7 +43,7 @@ FileManager::FileManager(string file_name)
 const char *FileManager::get_record(const int record_addr) const throw(Error)
 {
     /* 错误检查 */
-    if(record_addr >= getEOF())
+    if (record_addr >= getEOF())
     {
         string err_info = "[FileManager::get_record] addr out of EOF";
         Error err(err_info);
@@ -52,13 +53,12 @@ const char *FileManager::get_record(const int record_addr) const throw(Error)
     /* ----------------------------- */
 
     // 计算block_id
-    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+    BufferManager &buffermanager = MiniSQL::get_buffer_manager();
 
     int block_id = record_addr / BLOCK_SIZE;
     //就是实际的偏移地址
     int posInBlock = record_addr - (block_id * BLOCK_SIZE);
     Block *block = buffermanager.getBlock(file_name, block_id);
-    
 
     // 读出所需的record
     return block->getContent() + posInBlock;
@@ -67,11 +67,12 @@ const char *FileManager::get_record(const int record_addr) const throw(Error)
 /*
  * 获得block; 改变content; 标记脏块；更新 free_list; 更新头信息
  * 注意，delete的时候，不能record_count--,因为通过free_list添加的时候，我没有让它++
+ * 注意修改有效位
  */
 bool FileManager::delete_record_ByAddr(const int record_addr) throw(Error)
 {
     /* 错误检查 */
-    if(record_addr >= getEOF())
+    if (record_addr >= getEOF())
     {
         string err_info = "[FileManager::get_record] addr out of EOF";
         Error err(err_info);
@@ -79,24 +80,26 @@ bool FileManager::delete_record_ByAddr(const int record_addr) throw(Error)
     }
     /* ----------------------------- */
 
-    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+    BufferManager &buffermanager = MiniSQL::get_buffer_manager();
     int block_id = getBlockIDFromAddr(record_addr);
     int relative_addr = getRelativeAddrInBlock(block_id, record_addr);
-    Block * block = buffermanager.getBlock(file_name, block_id);
-    char * rawdata = block->getContent() + relative_addr;
+    Block *block = buffermanager.getBlock(file_name, block_id);
+    char *rawdata = block->getContent() + relative_addr;
     int temp = first_free_record_addr;
 
     // 更新free_list
     first_free_record_addr = record_addr;
     memcpy(rawdata, &temp, INT_LENGTH);
+    // 修改有效位
+    unsigned char Valid = 0;
+    memcpy(rawdata + LogicalRecordLength, &Valid, 1); 
 
     //标记脏块
     block->set_dirty(true);
 
     // 更新头信息
-    updataMeta(); 
-    return true;  
-
+    updataMeta();
+    return true;
 }
 
 // 返回插入后的recordID
@@ -109,7 +112,6 @@ const int FileManager::add_record(const char *rawdata) throw(Error)
     if (first_free_record_addr == -1)
     {
         record_addr = AddByCount(rawdata);
-        
     }
     else
     {
@@ -117,7 +119,7 @@ const int FileManager::add_record(const char *rawdata) throw(Error)
     }
 
     updataMeta();
-    return record_addr; 
+    return record_addr;
 
     //更新首块信息
 }
@@ -138,7 +140,10 @@ int FileManager::AddByCount(const char *rawdata)
 
     // 这里是否需要改成成员变量？更新内容
     Block *block = buffermanager.getBlock(file_name, block_id);
-    memcpy(block->getContent() + record_relative_addr, rawdata, record_length);
+    // 需要修改，因为rawdata实际上没有那么长
+    unsigned char Valid = 1;
+    memcpy(block->getContent() + record_relative_addr, rawdata, LogicalRecordLength);
+    memcpy(block->getContent() + record_relative_addr + LogicalRecordLength, &Valid, 1);
     block->set_dirty(true); //标记脏块
 
     return record_addr;
@@ -155,12 +160,14 @@ int FileManager::AddByFreeList(const char *rawdata)
     block_id = getBlockIDFromAddr(record_addr);
     record_relative_addr = getRelativeAddrInBlock(block_id, record_addr);
 
-    Block * block = buffermanager.getBlock(file_name, block_id);
+    Block *block = buffermanager.getBlock(file_name, block_id);
 
     //更新first_free_record_addr;
     first_free_record_addr = *(reinterpret_cast<int *>(block->getContent() + record_relative_addr));
-    // 更新内容
-    memcpy(block->getContent() + record_relative_addr, rawdata, record_length);
+    // 更新内容, 更新有效位
+    unsigned char Valid = 1;
+    memcpy(block->getContent() + record_relative_addr, rawdata, LogicalRecordLength);
+    memcpy(block->getContent() + record_relative_addr + LogicalRecordLength, &Valid, 1);
     block->set_dirty(true); //标记脏块
 
     return record_addr;
@@ -168,61 +175,68 @@ int FileManager::AddByFreeList(const char *rawdata)
 
 void FileManager::updataMeta()
 {
-    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+    BufferManager &buffermanager = MiniSQL::get_buffer_manager();
 
-    Block * metahead = buffermanager.getBlock(file_name, 0);
+    Block *metahead = buffermanager.getBlock(file_name, 0);
 #ifdef DEBUGFILE
     cout << "[FileManager::updateMeta] " << file_name << "0 " << record_length << " " << first_free_record_addr << " "
-              << record_count << endl;
+         << record_count << endl;
 #endif
-    char * content = metahead->getContent();
+    char *content = metahead->getContent();
     memcpy(content, (&record_length), INT_LENGTH);
     memcpy(content + INT_LENGTH, (&first_free_record_addr), INT_LENGTH);
-    memcpy(content + 2*INT_LENGTH, (&record_count), INT_LENGTH);
+    memcpy(content + 2 * INT_LENGTH, (&record_count), INT_LENGTH);
     metahead->set_dirty(true); //标记脏
-
 }
 
 // 指针先++再获得内容
 // 获得下一个指针所指内容，如果不行则返回错误
 // 返回地址
 
-int FileManager::getNextRecord(char * rawdata) throw (Error)
+/*
+ * 增加有效位后可以不用这么繁琐
+ */
+int FileManager::getNextRecord(char *rawdata) throw(Error)
 {
     //先自增一次
     PointerIncrement();
+    unsigned short Valid = 1;
+    BufferManager &buffermanager = MiniSQL::get_buffer_manager();
+    Block * block = nullptr;
+    int block_id = 0;
+    int relativeAddrInBlock = 0;
 
-    //遇到了一个删除的位置
-    while(pointer == delete_ptr)
+    while (1)
     {
-        // Pointer自增，遇到跨块会自动对齐
-        BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+        block_id = getBlockIDFromAddr(pointer);
+        relativeAddrInBlock = getRelativeAddrInBlock(block_id, pointer);
+        block = buffermanager.getBlock(file_name, block_id);
+        memcpy(&Valid,
+               block->getContent() + relativeAddrInBlock + LogicalRecordLength, 1);
+        if (Valid == 1)
+        { //有效
+            break;
+        }
+        //否则无效,指针指向下一位
         PointerIncrement();
-        int block_id = getBlockIDFromAddr(delete_ptr);
-        int relativeAddrInBlock = getRelativeAddrInBlock(block_id, delete_ptr);
-        Block * block = buffermanager.getBlock(file_name, block_id);
-        //更新了下一个delete_ptr
-        delete_ptr = *(reinterpret_cast<int *>(block->getContent() + relativeAddrInBlock));
+        if (pointer >= getEOF())
+        {
+            //到了文件末尾
+            return -1;
+        }
     }
-    //现在找到了一个不是delete过的位置
-    //判断是不是超过文件了
-    if(pointer >= getEOF())
-    {
-        //到了文件末尾
-        return -1;
-    }
-    LoadRecord(pointer, rawdata);
-    return pointer;  
-    
+    // 现在出来的pointer必然是ok的
+    memcpy(rawdata, block->getContent() + relativeAddrInBlock, LogicalRecordLength);
+    return pointer;
 }
 
-void FileManager::LoadRecord(const int pointer, char * rawdata)
+void FileManager::LoadRecord(const int pointer, char *rawdata)
 {
-    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
+    BufferManager &buffermanager = MiniSQL::get_buffer_manager();
     int block_id = getBlockIDFromAddr(pointer);
     int relativeAddrInBlock = getRelativeAddrInBlock(block_id, pointer);
-    Block * block = buffermanager.getBlock(file_name, block_id);
-    memcpy(rawdata, block->getContent() + relativeAddrInBlock, record_length);
+    Block *block = buffermanager.getBlock(file_name, block_id);
+    memcpy(rawdata, block->getContent() + relativeAddrInBlock, LogicalRecordLength);
 }
 
 void FileManager::PointTo(int addr)
@@ -246,17 +260,11 @@ void FileManager::PointerIncrement()
     //接下来要判断这个指针指的一段区域会不会跨块
     int temp_addr = pointer + record_length;
     //这个地方要用严格大于号
-    if(temp_addr > (last_block_id + 1) * BLOCK_SIZE)
+    if (temp_addr > (last_block_id + 1) * BLOCK_SIZE)
     {
         //跨块了
         pointer = (last_block_id + 1) * BLOCK_SIZE;
-
     }
-
-
-
-    
-    
 }
 
 void FileManager::renewDeletePointer()
@@ -275,18 +283,14 @@ int FileManager::getRelativeAddrInBlock(const int block_id, const int addr)
     return ret;
 }
 
-int FileManager::getEOF() const 
+int FileManager::getEOF() const
 {
     //通过record_count算出绝对的结束地址
     //算出之前有多少块 包括了 0th块
-    int block_count = ceil(record_count / record_count_perblock);
+    int block_count = ceil(((double)record_count / record_count_perblock));
     int recordNumInBlock = record_count - (block_count - 1) * record_count_perblock;
     int bias = recordNumInBlock * record_length;
     return bias + block_count * BLOCK_SIZE;
-
-
-
-
 }
 
 void FileManager::ReNewAllPtr()

@@ -23,6 +23,7 @@ class FileManager
     Block * block; // 具体这个file的block, 这里的block由buffer集中delete不用file来管
     int block_count; // 可以算出来
     int record_length; // 读出来的
+    int LogicalRecordLength;
     int first_free_record_addr; //绝对地址，读出来的
     int record_count; // 读出来的
     int record_count_perblock; //可以算出来

@@ -73,7 +73,7 @@ int BPTree::getFirstEmptyBlock() {
 
 
 int BPTree::insert(int nodeID, BPTreeKey& entry) {
-    BPTreeNode* node = new BPTreeNode(fileName.c_str(), nodeID, keyLength);
+    BPTreeNode* node = new BPTreeNode(fileName.c_str(), nodeID, dataType);
     int pos = node->findPosition_LowerBound(entry);
     int ret = BPNormal;
     int res = node->isleaf() ? BPInsert : insert(node->getkeyPointer(pos), entry);
@@ -84,6 +84,7 @@ int BPTree::insert(int nodeID, BPTreeKey& entry) {
         ret = BPRepeat;
     }else if (res == BPInsert)
     {
+        pos = pos + 1;
         //返回值有BPrepeat和BPNormal两种
         res = node->insertEntry(entry, pos);
         if((res != BPRepeat ) && node->isoverflow())
@@ -164,7 +165,7 @@ int BPTree::insertKey(BPTreeKey & entry) {
  * 回到上一个节点，它也变成了BPInsert的mode，然后会自动对结点进行一次插入
  */
 
-int BPTree::removeKey(BPTreeKey& entry, ptr& retPointer) {
+int BPTree::removeKey(BPTreeKey& entry, int* retPointer) {
     int nodeID = RootID;
     int ret = BPNormal;
 
@@ -183,7 +184,7 @@ int BPTree::removeKey(BPTreeKey& entry, ptr& retPointer) {
             int pos = node->findPosition_UpperBound(entry);
             if(pos <= node->getNodeSize() && node->getEntry(pos) == entry)
             {
-                retPointer.set_id(node->getEntry(pos).getPointer());
+                *retPointer = node->getEntry(pos).getPointer();
                 node->deleteEntry(pos);
                 if(node->getNodeSize() == 0)
                 {
@@ -219,7 +220,7 @@ int BPTree::removeKey(BPTreeKey& entry, ptr& retPointer) {
 
 
 
-int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, ptr& retPointer, BPTreeKey & parentKey ) {
+int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, int* retPointer, BPTreeKey & parentKey ) {
 
     BPTreeNode* node = new BPTreeNode(fileName.c_str(), nodeID, keyLength);
     BPTreeNode* sibling = nullptr;
@@ -247,17 +248,13 @@ int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, 
         {
             if(entry != node->getEntry(pos))
             {
-#if DEBUG
-                cout << "The key you want to delete is not in the table!" << endl;
-#endif
 
-                Error deleteFail("The key you want to delete is not in the table!");
-                delete node;
-                throw;
+                cout <<"[BPTree::remove]line 252" << "The key you want to delete is not in the table!" << endl;
+                ret = BPDeleteFail;
             }
 
             //把要删除的key的pointer传出去！
-            retPointer.set_id(node->getEntry(pos).getPointer());
+            *retPointer = node->getEntry(pos).getPointer();
         }
         res = node->deleteEntry(pos);
 

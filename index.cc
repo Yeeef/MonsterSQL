@@ -2,9 +2,9 @@
 #include "BPTree.h"
 #include "BPTreeNode.h"
 
-bool IndexManager::insert(const string & index_name, const char * raw_data, int data_type, ptr& Pointer) throw(Error)
+bool IndexManager::insert(const string & index_name, const char * raw_data, int data_type, int recordID) throw(Error)
 {
-    BPTreeKey entry(raw_data, Pointer, data_type);
+    BPTreeKey entry(raw_data, recordID, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
     int ret = tree->insertKey(entry);
 
@@ -23,7 +23,7 @@ bool IndexManager::insert(const string & index_name, const char * raw_data, int 
 int IndexManager::find(const string &index_name, const char *raw_data, int data_type) {
     BPTreeKey entry(raw_data, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
-    int ret = tree->findKey(entry);
+    int ret = tree->findKey(entry );
 
     delete tree;
     if(ret  == BPEmpty)
@@ -84,10 +84,12 @@ bool IndexManager::dropIndex(const string &index_name) {
 
 }
 
-bool IndexManager::remove(const string &index_name, const char *raw_data, int data_type, ptr& retPointer) {
+int IndexManager::remove(const string &index_name, const char *raw_data, int data_type) {
 
     BPTreeKey entry(raw_data, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
+    int recordPointer;
+    int* retPointer = &recordPointer;
     int ret = tree->removeKey(entry, retPointer);
 
     delete tree;
@@ -98,5 +100,5 @@ bool IndexManager::remove(const string &index_name, const char *raw_data, int da
         throw;
     }
 
-    return true;
+    return recordPointer;
 }

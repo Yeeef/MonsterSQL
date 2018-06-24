@@ -27,7 +27,7 @@ private:
     int insert(int nodeID,  BPTreeKey& entry);
 
     //todo
-    int remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, ptr& Pointer, BPTreeKey & parentKey );
+    int remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, int * retPointer, BPTreeKey & parentKey );
     int getFirstEmptyBlock();
    // int findKeyNode(const BPTreeKey & entry);
     void updateHeader();
@@ -42,9 +42,10 @@ public:
     //todo
     ~BPTree() = default;
     explicit BPTree(const string & fileName, int data_type);
+
     int findKey(BPTreeKey & entry);
 
-    int removeKey(BPTreeKey& entry, ptr& Pointer);
+    int removeKey(BPTreeKey& entry, int * retPointer);
 //    void scaleFindLeftEnd(BPTreeKey & entry, vector<ptr>& res);
 //    void scaleFindRightEnd(BPTreeKey & entry, vector<ptr>& res);
 //    void scaleFind(BPTreeKey &sta_entry, BPTreeKey &end_entry,vector<ptr> &res);

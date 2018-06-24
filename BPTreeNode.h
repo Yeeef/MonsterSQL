@@ -24,9 +24,9 @@ class BPTreeNode {
 public:
     //文件名 + nodeID + keyLength
     //用于根据BufferManager传来的Node构建已有的B+树结点
-    BPTreeNode(const char *_filename, int _id, int _keyLength);
+    BPTreeNode(const char *_filename, int _id, int data_type);
 
-    BPTreeNode(const char *_filename, int _id, int _keyLength, bool isLeaf, int nextNodeId);
+    BPTreeNode(const char *_filename, int _id, int data_type, bool isLeaf, int nextNodeId);
     ~BPTreeNode();
 
 
