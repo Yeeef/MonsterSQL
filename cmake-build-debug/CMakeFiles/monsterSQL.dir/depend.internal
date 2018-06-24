@@ -83,7 +83,16 @@ CMakeFiles/monsterSQL.dir/index.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
  /Users/yee/Desktop/monster-sql/MiniSQL/record.h
 CMakeFiles/monsterSQL.dir/interpreter.cc.o
+ /Users/yee/Desktop/monster-sql/MiniSQL/api.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/buffer.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/catalog.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/config.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/file.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/index.h
  /Users/yee/Desktop/monster-sql/MiniSQL/interpreter.cc
+ /Users/yee/Desktop/monster-sql/MiniSQL/interpreter.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/minisql.h
+ /Users/yee/Desktop/monster-sql/MiniSQL/record.h
 CMakeFiles/monsterSQL.dir/main.cc.o
  /Users/yee/Desktop/monster-sql/MiniSQL/api.h
  /Users/yee/Desktop/monster-sql/MiniSQL/buffer.h

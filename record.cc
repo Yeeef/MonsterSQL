@@ -26,24 +26,42 @@ bool RecordManager::drop_table(const string &table_name) throw(Error)
  * 还需添加对重复记录的筛选？应该没有可能重复，应为我是从上之下遍历的
  * 
  */
-bool RecordManager::select(const string & table_name, const vector<string> & attribute_name, 
+int RecordManager::select(const string & table_name, const vector<string> & attribute_name,
                         const vector<int> & condition, const vector<string> & operand)
 {
+    int NumOfRecordAffected = 0;
     CatalogManager & catalogmanager = MiniSQL::get_catalog_manager();
     const Table * table = catalogmanager.get_table(table_name);
     
     FileManager filemanager("data/" + table_name);
     int addr;
     char rawdata[table->get_record_length()];
+    if(condition.size() == 0)
+    {
+        while((addr = filemanager.getNextRecord(rawdata)) != -1)
+        {
+
+            table->PrintRawdata(rawdata);
+            cout << endl;
+            NumOfRecordAffected++;
+
+
+        }
+        return NumOfRecordAffected;
+
+    }
     while((addr = filemanager.getNextRecord(rawdata)) != -1)
     {
         if(table->isSatisfyAllCondition(rawdata, attribute_name, condition, operand) == true)
         {
             table->PrintRawdata(rawdata);
+            cout << endl;
         }
+        NumOfRecordAffected++;
         
     }
-    return true;
+
+    return NumOfRecordAffected;
 
 }
 
@@ -98,15 +116,12 @@ int RecordManager::insert(const string &table_name, const char *rawdata) throw(E
 
     const Table *table = catalogmanager.get_table(table_name);
     const int record_length = table->get_record_length();
-    if (Method::isFileExist("data/" + table_name) == false)
-    {
-        Method::createFile("data/" + table_name, record_length);
-    }
     FileManager filemanager("data/" + table_name);
-    filemanager.ReNewAllPtr();
 
     // 检查unique, primary 是否 duplicate
     char ExistData[record_length];
+
+    /*
     while (filemanager.getNextRecord(ExistData) != -1)
     {
         //拿到了下一条记录的rawcontent.
@@ -120,6 +135,8 @@ int RecordManager::insert(const string &table_name, const char *rawdata) throw(E
             throw Error(err_info);
         }
     }
+     */
+
 
     // duplicate检查完毕，可以正常插入
     return filemanager.add_record(rawdata);

@@ -1,4 +1,5 @@
-
+#include "config.h"
+#include "minisql.h"
 #include "interpreter.h"
 #include <fstream>
 #include <sstream>
@@ -30,6 +31,16 @@ using namespace std;
  * insert还是会问题，assert那里
  * getNextRecord有问题，如果遇到中途删除过的地方，没有正常读好
  * 就看indexmanger的表现了
+ * 检验这条记录是否满足一致性，千万不能用遍历的方法，太麻烦！
+ * 暂时去掉一致性检验，先看看insert不检验的表现，现在Index出了问题
+ * 现在开始看看select不考虑index
+ * delete无效，先解决 select * from table;没有条件的问题
+ * drop table 之后 立即 create_table会出现 tablemeta/book 的问题 ✅
+ * 王丹尧不会默认 primary是一个unique ✅
+ * addrecord在多次操作中会出问题，可能是 pointer 的问题 ✅
+ * 65521调试突破口 ✅
+ * unique建索引的问题
+ * 现在insert加入index
  */
 int main()
 {
@@ -38,49 +49,44 @@ int main()
     cout << "MonsterSQL👹" << endl;
     CatalogManager & catalogmanager = MiniSQL::get_catalog_manager();
     BufferManager & buffermanager = MiniSQL::get_buffer_manager();
-    //buffermanager.print();
-    //catalogmanager.print();
-    API & api = MiniSQL::get_api();
-    string pri_name = "ID";
-    vector <Attribute> attri_set;
-    Attribute primary(pri_name, TYPE_INT, true, true);
-    attri_set.push_back(primary);
 
-    Attribute attri1("float", TYPE_FLOAT, false);
-    attri_set.push_back(attri1);
-    Attribute attri2("char8", 8, false, true);
-    attri_set.push_back(attri2);
 
-    vector <string> insert_data;
-    insert_data.push_back("2");
-    insert_data.push_back("3.2");
-    insert_data.push_back("lyf");
-    vector <int > type;
-    type.push_back(TYPE_INT);
-    type.push_back(TYPE_FLOAT);
-    type.push_back(8);
+    Interpreter interpreter;
+    string sql1 = "Create table book (id int primary key);" ;
+    string sql2 = "drop table book;";
+    string sql3 = "insert into book values (819);";
+    string sqlselect = "select * from book where id = 99999;";
+    string sqldelete = "delete from book where id = 5;";
 
+    //sql = "Create table book (id int primary key, name varchar(50), age INT, unique(id));drop table book;";
+    string rawsql = "insert into book values (";
+    string endsql = ") ;";
 
     try
     {
-        buffermanager.print();
-
-//        api.drop_table("three");
-//        api.drop_table("one");
-//        api.drop_table("two");
-          api.insert("one", insert_data, type);
+        interpreter.execute(sqlselect.c_str());
+       // interpreter.execute(sqldelete.c_str());
+        //interpreter.execute(sql3.c_str());
 //
-//        api.create_table("one", primary, attri_set);
-//         api.create_table("two", primary, attri_set);
-//         api.create_table("three", primary, attri_set);
-        //api.drop_table("four");
-        //api.drop_table("two");
-        //api.create_table("four", primary, attri_set);
-        //api.insert("four", insert_data, type);
-        //api.insert("lover" , insert_data, type);
-        //api.create_table("night", primary, attri_set);
-        
-        //
+//        for(int i = 0; i < 100000; i++)
+//        {
+//            stringstream ss;
+//            ss << i;
+//            string num;
+//            ss >> num;
+//            string sql4 = rawsql + num + endsql;
+//            interpreter.execute(sql4.c_str());
+//            //cout << sql4 << endl;
+//            //buffermanager.print();
+//
+//        }
+         cout << "good" << endl;
+
+//
+//         interpreter.execute(sql2.c_str());
+//
+//        interpreter.execute(sql1.c_str());
+
         catalogmanager.print();
         buffermanager.WriteAllBack();
 

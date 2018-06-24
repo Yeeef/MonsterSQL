@@ -13,7 +13,7 @@ class API
     bool insert(const string &table_name, const vector<string> &insert_data, const vector<int> &type) const throw(Error);
     bool Delete(const string &table_name, const vector<string> &attribute_name,
                 const vector<int> &condition, const vector<string> &operand) const throw(Error);
-    bool select(const string &table_name, const vector<string> &attribute_name,
+    int select(const string &table_name, const vector<string> &attribute_name,
                 const vector<int> &condition, const vector<string> &operand) const throw(Error);
     bool create_index(const string &table_name, const string &attribute_name,
                       const string &index_name) const throw(Error);

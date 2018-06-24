@@ -323,8 +323,9 @@ int BPTreeNode::findPosition_LowerBound(const BPTreeKey &key) {
     {
         ret--;
     }
+    //如果返回的是-1，相应也会返回-1，表示的是nodeSize为零（但是正常运行是不会到这个地步的）
+    return ret;
 
-    return  ret;
 
 }
 /*
@@ -344,8 +345,8 @@ int BPTreeNode::findPosition_UpperBound(const BPTreeKey &key) {
 
     int low = 1, high = nodeSize;
     int middle = (low + high) / 2;
-
-    //todo
+    //小于
+    //Array is empty or target is larger than any every element in array, 并且整个node装不下了
     if(low > high )
     {
         cout <<"BPTreeNode::findPosition"<< "The node is empty!" << endl;

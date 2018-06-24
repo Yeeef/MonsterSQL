@@ -7,63 +7,10 @@
 #include <stdlib.h>
 
 #include "interpreter.h"
+#include "minisql.h"
 using namespace std;
 
-#define TYPE_CHAR 255 //允许的最短长度实际上是4
-#define MIN_TYPE_LENGTH 4
-#define TYPE_INT 256
-#define TYPE_FLOAT 257
 
-// 条件操作符
-#define COND_EQ 0
-#define COND_NE 1
-#define COND_LT 2
-#define COND_GT 3
-#define COND_LE 4
-#define COND_GE 5
-
-class Attribute
-{
-    // all this can be read from the catalog
-    private:
-    // attribute name
-    string name;
-    // which type is the Attribute
-    short type;
-
-    int length;
-
-    bool isPrimary;
-    bool isUnique;
- public:
-    Attribute(string & name, short type, bool isPrimary, bool isUnique)
-    : name(name), type(type), isPrimary(isPrimary), isUnique(isUnique) 
-    {
-        length = getLengthFromType(type); 
-    }
-    ~Attribute(){};
-
-    void set_primary(bool status) { isPrimary = true; }
-    void set_Unique(bool status) {isUnique = true; }
-    string get_name() const { return name; }
-    int get_type() const {return type; }
-    int get_length() const { return length; }
-    bool is_primary() { return isPrimary; }
-    bool is_unique() { return isUnique; }
-
-    const int getLengthFromType(int type);
-};
-
-class Error
-{
-    private:
-    string error_info;
-
-    public:
-    Error(string error_info) : error_info(error_info) {}
-    ~Error(){}
-    string print_err() { cout << error_info << endl;}
-};
 
 
 
@@ -221,7 +168,6 @@ Interpreter::Interpreter(bool _fromFile): fromFile(_fromFile)
     ptr = -1;
 
    exiting = false;
-   API & api  = MiniSQL:: get_api();
 }
 
 Interpreter::~Interpreter(){}
@@ -393,6 +339,7 @@ void Interpreter::execute(const char* sql)
 // 选择
 void Interpreter::select()
 {
+    API & api = MiniSQL::get_api();
     ptr++;
     if (tokens[ptr] != "*" || type[ptr] != SYMBOL)
     {
@@ -429,8 +376,8 @@ void Interpreter::select()
         toc = clock();
 
         // 运行时间
-        if (ifselected == 1 &&!fromFile)
-            cout << " record(s) selected. Query done in " << 1.0 * (toc-tic) / CLOCKS_PER_SEC << "s." << endl;
+        if (ifselected != 0 &&!fromFile)
+            cout << ifselected <<" record(s) selected. Query done in " << 1.0 * (toc-tic) / CLOCKS_PER_SEC << "s." << endl;
  
     /*    cout<<table_name<<endl;
         for(vector<string>::iterator iter=attribute_name.begin();iter!=attribute_name.end();++iter)
@@ -455,6 +402,7 @@ void Interpreter::select()
 //删除记录
 void Interpreter::remove()
 {
+    API & api = MiniSQL::get_api();
     ptr++;
     if (tokens[ptr] != "from" || type[ptr] != IDENTIFIER)
     {
@@ -480,7 +428,7 @@ void Interpreter::remove()
         //Delete
         int tic, toc;
         tic = clock();
-        int ifdeleted = api::Delete(table_name, attribute_name, condition, operand);
+        int ifdeleted = api.Delete(table_name, attribute_name, condition, operand);
         toc = clock();
 
         //运行时间
@@ -510,6 +458,7 @@ void Interpreter::remove()
 //删除表
 void Interpreter::drop_table()
 {
+    API & api = MiniSQL::get_api();
     ptr++;
     if (type[ptr] != IDENTIFIER)
     {
@@ -529,7 +478,7 @@ void Interpreter::drop_table()
     int tic, toc;
     bool ifdrop;
     tic = clock();
-    intifdrop = api.drop_table(table_name);
+    ifdrop = api.drop_table(table_name);
     toc = clock();
 
     //运行时间
@@ -543,6 +492,7 @@ void Interpreter::drop_table()
 //删除索引
 void Interpreter::drop_index()
 {
+    API & api = MiniSQL::get_api();
     ptr++;
     if (type[ptr] != IDENTIFIER)
     {
@@ -590,6 +540,7 @@ void Interpreter::drop_index()
 //创建索引
 void Interpreter::create_index()
 {
+    API & api = MiniSQL::get_api();
     ptr++;
     if (type[ptr] != IDENTIFIER)
     {
@@ -663,6 +614,7 @@ void Interpreter::create_index()
 //创建表
 void Interpreter::create_table()
 {
+    API & api = MiniSQL::get_api();
     ptr++;
     if (type[ptr] != IDENTIFIER)
     {
@@ -902,7 +854,7 @@ void Interpreter::create_table()
     int tic, toc;
     bool res;
     tic = clock();
-    res = api.create_table(tableName, *primary, a);
+    res = api.create_table(table_name, *primary, a);
     toc = clock();
     
     //运行时间
@@ -924,6 +876,7 @@ void Interpreter::create_table()
 //插入记录
 void Interpreter::insert()
 {
+    API & api = MiniSQL::get_api();
     ptr++;
     if (tokens[ptr] != "into" || type[ptr] != IDENTIFIER)
     {
@@ -1011,14 +964,17 @@ void Interpreter::insert()
     // Do insertion
     int tic, toc;
     bool res;
-    tic = clock();
-    res = api.insert(table_name, data, type);
-    toc = clock();
+
+    //tic = clock();
+    res = api.insert(table_name, data, datatype);
+    //toc = clock();
 
     //运行时间
+    /*
     if (res &&!fromFile)
         cout << "1 record inserted. Query done in " << 1.0 * (toc-tic) / CLOCKS_PER_SEC << "s." << endl;
-/* 
+    */
+     /*
     cout<<table_name<<endl;
       for(vector<string>::iterator iter=data.begin();iter!=data.end();++iter)
     {
@@ -1036,6 +992,7 @@ void Interpreter::insert()
 //运行文件
 void Interpreter::execfile()
 {
+    API & api = MiniSQL::get_api();
     ptr++;
     if (type[ptr] != SCHAR && type[ptr] != STRING)
     {
@@ -1105,29 +1062,4 @@ void Interpreter::exit()
 
 
 
-int main()
-{
-	string sql;
-	sql = "Create table book (id int primary key, name varchar(50), age INT, unique(id));drop table book;";
-//    sql = "drop table book;";
-//    sql = "create index person on book(id);";
-//    sql = "drop index person on book;"; 
-//    sql = " select * from book where id = 0 and name = 'k';";
-//     sql = "insert into book values(5, 'ttt');";
-//    sql = "delete from book where id = 5 and name ='k';"; 
-  
-	Interpreter interpreter;
-	interpreter.execute(sql.c_str());
-/*	
-    for(vector<string>::iterator iter=tokens.begin();iter!=tokens.end();++iter)
-    {
-    	cout<<*iter<<" ";
-	}
-	for(vector<int>::iterator iter=type.begin();iter!=type.end();++iter)
-    {
-    	cout<<*iter<<" ";
-	}
-	cout<<endl;
-*/
-}
 

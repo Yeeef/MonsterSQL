@@ -82,7 +82,16 @@ CMakeFiles/monsterSQL.dir/index.cc.o: ../index.h
 CMakeFiles/monsterSQL.dir/index.cc.o: ../minisql.h
 CMakeFiles/monsterSQL.dir/index.cc.o: ../record.h
 
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../api.h
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../buffer.h
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../catalog.h
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../config.h
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../file.h
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../index.h
 CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../interpreter.cc
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../interpreter.h
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../minisql.h
+CMakeFiles/monsterSQL.dir/interpreter.cc.o: ../record.h
 
 CMakeFiles/monsterSQL.dir/main.cc.o: ../api.h
 CMakeFiles/monsterSQL.dir/main.cc.o: ../buffer.h

@@ -88,8 +88,8 @@ class Attribute
          isPrimary = false; }
     ~Attribute(){};
 
-    void set_primary(bool status) { isPrimary = true; }
-    void set_Unique(bool status) {isUnique = true; }
+    void set_primary(bool status) { isPrimary = status; }
+    void set_Unique(bool status) {isUnique = status; }
     string get_name() const { return name; }
     int get_type() const {return type; }
     int get_length() const { return length; }

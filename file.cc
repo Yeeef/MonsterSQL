@@ -31,7 +31,6 @@ FileManager::FileManager(string file_name)
 
     // 计算 blockcount？, record_perblock
     record_count_perblock = BLOCK_SIZE / record_length;
-    renewDeletePointer();
     renewPointer();
 
 #ifdef DEBUGFILE

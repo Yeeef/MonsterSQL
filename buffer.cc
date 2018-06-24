@@ -45,7 +45,7 @@ inline void BufferNode::set_block(Block *block)
 
 /* ---------------------------------------------------------------------*/
 
-BufferManager::BufferManager() : max_block_count(4)
+BufferManager::BufferManager() : max_block_count(16)
 {
     // 建立一个循环大小为max的循环链表
     BufferNode *current_node = new BufferNode();
@@ -102,7 +102,7 @@ Block *BufferManager::getBlock(const string &fileName, int block_id) throw(Error
 // 同时还要加入map中！✅
 Block *BufferManager::getBlockFromFile(const string &fileName, int block_id) throw(Error)
 {
-    char * content= new char[BLOCK_SIZE];
+    char * content= new char[BLOCK_SIZE]();
     // 打开文件以二进制格式
     ReadBlockContent(fileName, block_id, content);
 
@@ -161,6 +161,7 @@ void BufferManager::addBlock(Block *block) throw(Error)
 
 /* 通过文件名删除对应的块，不需要写回文件 */
 /* 注意要更新delete对应的block，然后再置为nullptr; 更新block的map */
+/* 删除的时候还要判断脏块 */
 void BufferManager::DeleteBlockByFile(const string &fileName)
 {
     BufferNode *finder = clock_ptr;
@@ -169,11 +170,15 @@ void BufferManager::DeleteBlockByFile(const string &fileName)
     {
         Block *block = finder->get_block();
         if(block == nullptr)
+        {
+            finder = finder->get_next();
             continue;
+        }
+
         string blockFileName = block->get_filename();
         int block_id = block->get_blockID();
         string map_name;
-        getMapName(map_name, fileName, block_id);
+        getMapName(map_name, blockFileName, block_id);
         // 不会析构我的 BufferNode *
 
 

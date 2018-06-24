@@ -102,12 +102,14 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
 
         const int addr = recordmanager.insert(table_name, rawdata);
 
+
         for (int i = 0; i < table->attri_name.size(); i++)
         {
             string index_name;
             if (table->isIndex(table->attri_name.at(i), index_name))
                 indexmanager.insert(index_name, raw_Vec.at(i), type.at(i), addr);
         }
+
 
         ret = true;
         for (auto raw : raw_Vec)
@@ -149,6 +151,7 @@ bool API::Delete(const string &table_name, const vector<string> &attribute_name,
 
         /* 根据vector attribute_name 来一个个向下看, 找有没有能用index的 */
         /* 只要找到一个就立即开始做？ */
+        /*
         for (int i = 0; i < size; i++)
         {
             if (condition.at(i) != COND_EQ)
@@ -177,6 +180,7 @@ bool API::Delete(const string &table_name, const vector<string> &attribute_name,
             }
             return true;
         }
+         */
         //利用record暴力搜索，这里就不一定是唯一的了，不需要传入vector, 结果实时打印打印结果最好实时打印还是？
         return recordmanager.Delete(table_name, attribute_name, condition, operand);
     }
@@ -194,7 +198,7 @@ bool API::Delete(const string &table_name, const vector<string> &attribute_name,
  * 暂时没有让index实现scale find
  * 
  */
-bool API::select(const string &table_name, const vector<string> &attribute_name,
+int API::select(const string &table_name, const vector<string> &attribute_name,
                  const vector<int> &condition, const vector<string> &operand) const throw(Error)
 {
 
@@ -222,6 +226,7 @@ bool API::select(const string &table_name, const vector<string> &attribute_name,
 
         /* 根据vector attribute_name 来一个个向下看, 找有没有能用index的 */
         /* 只要找到一个就立即开始做？ */
+
         for (int i = 0; i < size; i++)
         {
             if (condition.at(i) != COND_EQ)
@@ -242,14 +247,20 @@ bool API::select(const string &table_name, const vector<string> &attribute_name,
             //找到绝对地址
             int addr = indexmanager.find(index_name, keydata, attri.get_type());
             //调用record manager
+            if(addr == -1)
+            {
+                return false;
+            }
             const char *rawdata = recordmanager.GetRecordByAddr(table_name, addr);
             // 判断是否符合所有要求, 如果满足要求，直接打印出来
             if (table->isSatisfyAllCondition(rawdata, attribute_name, condition, operand) == true)
             {
                 table->PrintRawdata(rawdata);
+                cout << endl;
             }
             return true;
         }
+
         //利用record暴力搜索，这里就不一定是唯一的了，不需要传入vector, 结果实时打印打印结果最好实时打印还是？
         return recordmanager.select(table_name, attribute_name, condition, operand);
     }

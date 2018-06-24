@@ -8,9 +8,9 @@ bool IndexManager::insert(const string & index_name, const char * raw_data, int 
     BPTree* tree = new BPTree("index/" + index_name, data_type);
     int ret = tree->insertKey(entry);
 
-//#if DEBUGINDEX
-//    tree->debugPrint();
-//#endif
+#if DEBUGINDEX
+    tree->debugPrint();
+#endif
 
     delete tree;
 
@@ -28,11 +28,7 @@ int IndexManager::find(const string &index_name, const char *raw_data, int data_
     BPTreeKey entry(raw_data, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
     int ret = tree->findKey(entry);
-/*
-#if DEBUGINDEX
-    tree->debugPrint();
-#endif
-*/
+
     delete tree;
     if(ret  == BPEmpty)
     {
@@ -96,7 +92,7 @@ int IndexManager::remove(const string &index_name, const char *raw_data, int dat
 
     BPTreeKey entry(raw_data, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
-    int recordPointer = 0;
+    int recordPointer;
     int* retPointer = &recordPointer;
     int ret = tree->removeKey(entry, retPointer);
 

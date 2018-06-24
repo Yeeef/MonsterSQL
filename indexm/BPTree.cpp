@@ -79,9 +79,14 @@ int BPTree::insert(int nodeID, BPTreeKey& entry) {
     int res;
 
     //nodesize == 0
-    //todo
-    assert(pos != -1);
-    res = node->isleaf() ? BPInsert : insert(node->getkeyPointer(pos), entry);
+    if(pos == -1)
+    {
+        cerr << "BPTree::insert::The node is empty!Your program is wrong!"<<endl;
+        res = BPRepeat;
+    }else
+    {
+        res = node->isleaf() ? BPInsert : insert(node->getkeyPointer(pos), entry);
+    }
 
     // Check for duplicate
     if (res == BPRepeat)
@@ -208,15 +213,19 @@ int BPTree::removeKey(BPTreeKey& entry, int* retPointer) {
         } else
         {
             int pos = node->findPosition_LowerBound(entry);
-
-            assert(pos != -1);
-
-            //从root开始处理
-            ret = remove(nodeID, entry,-1,false, retPointer, pos > 1? node->getEntry(pos-1):node->getEntry(pos));
+            if(pos == -1)
+            {
+                cerr << "BPTree::remove： The node is empty!Your program is wrong!" << endl;
+                ret =  BPDeleteFail;
+            }else
+            {
+                //从root开始处理
+                ret = remove(nodeID, entry,-1,false, retPointer, pos > 1? node->getEntry(pos-1):node->getEntry(pos));
+            }
 
             if( ret == BPDeleteFail)
             {
-                //todo
+
                 cout << "[BPTree::removeKey] "<<" This record was not exsited in the index!" << endl;
                 ret =  BPDeleteFail;
             }
@@ -393,7 +402,6 @@ int BPTree::findKey(BPTreeKey &entry) {
 #if DEBUG
             assert(pos != -1);
 #endif
-
             if(node->isleaf() )
             {
                 //todo:去掉assert
