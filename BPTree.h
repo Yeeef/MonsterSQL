@@ -32,10 +32,7 @@ private:
    // int findKeyNode(const BPTreeKey & entry);
     void updateHeader();
 
-#ifdef DEBUGINDEX
-    // Recursive function for tree structure printing
-    void debugPrint(int id);
-#endif
+
 
 public:
     /*
@@ -60,8 +57,10 @@ public:
 #ifdef DEBUG
     // Recursive function for tree structure printing
     void debugPrint();
-#endif
 
+    // Recursive function for tree structure printing
+    void debugPrint(int id);
+#endif
 };
 
 

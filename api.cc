@@ -67,6 +67,7 @@ bool API::drop_table(const string &table_name) const throw(Error)
  * 修改了Table,attributeset那里要修改
  * rawdata到底能否delete？
  * 一定要保证，try catch过程中没有内存泄漏，如果你犯错了，那么你一定要帮我delete
+ * 先通过 index 来确保唯一性
  */
 bool API::insert(const string &table_name, const vector<string> &insert_data, const vector<int> &type) const throw(Error)
 {
@@ -99,6 +100,24 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
 
         //我还需要知道插入后的 record_id
         // Pointer 就是我要的信息
+
+        for (int i = 0; i < table->attri_name.size(); i++)
+        {
+            string index_name;
+            if (table->isIndex(table->attri_name.at(i), index_name))
+            {
+                // 先执行一个find操作
+                int addrInIndex = indexmanager.find(index_name, raw_Vec.at(i), type.at(i));
+                if(addrInIndex != -1)
+                {
+                    cout << "[API::insert] duplicate record" << endl;
+                    return false;
+                }
+                break;
+
+            }
+                
+        }
 
         const int addr = recordmanager.insert(table_name, rawdata);
 

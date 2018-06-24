@@ -107,7 +107,7 @@ bool RecordManager::DeleteRecordByAddr(const string & table_name, const int addr
 
 /* 该函数返回插入后的绝对地址
  * 先看一下data文件是否存在，如果不存在，则创建  ✅
- * 检查重复属性 ✅
+ * 检查重复属性 ,不需要record来检查 ✅
  * 插入 这里有一个内存泄漏的风险
  */
 int RecordManager::insert(const string &table_name, const char *rawdata) throw(Error)
@@ -117,25 +117,7 @@ int RecordManager::insert(const string &table_name, const char *rawdata) throw(E
     const Table *table = catalogmanager.get_table(table_name);
     const int record_length = table->get_record_length();
     FileManager filemanager("data/" + table_name);
-
-    // 检查unique, primary 是否 duplicate
-    char ExistData[record_length];
-
-    /*
-    while (filemanager.getNextRecord(ExistData) != -1)
-    {
-        //拿到了下一条记录的rawcontent.
-        string duplicate;
-        // 不符合
-        if (table->CheckConsistency(ExistData, rawdata, duplicate) == false)
-        {
-            // 删除rawdata
-            delete[] rawdata;
-            string err_info = "[RecordManager::insert] duplicate '" + duplicate + "' ";
-            throw Error(err_info);
-        }
-    }
-     */
+  
 
 
     // duplicate检查完毕，可以正常插入

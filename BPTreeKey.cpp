@@ -131,9 +131,20 @@ void BPTreeKey::setKey(const char *raw_data, int nodeID) {
 
 void BPTreeKey::setKey(const char *raw_data) {
     if(raw_data == nullptr)
+    {
+        delete rawData;
         rawData = nullptr;
+    }
     else
-        memcpy(rawData,raw_data, Method::getLengthFromType(dataType));
+    {
+        int keyLength = Method::getLengthFromType(dataType);
+        if(rawData == nullptr)
+        {
+            rawData = new char[keyLength];
+        }
+        memcpy(rawData,raw_data, keyLength);
+    }
+
 }
 
 BPTreeKey& BPTreeKey::operator=(const BPTreeKey &entry) {

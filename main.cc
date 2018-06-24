@@ -40,7 +40,7 @@ using namespace std;
  * addrecord在多次操作中会出问题，可能是 pointer 的问题 ✅
  * 65521调试突破口 ✅
  * unique建索引的问题
- * 现在insert加入index
+ * 现在insert加入index ✅  但是插入会有问题
  */
 int main()
 {
@@ -55,12 +55,14 @@ int main()
     string sql1 = "Create table book (id int primary key);" ;
     string sql2 = "drop table book;";
     string sql3 = "insert into book values (819);";
-    string sqlselect = "select * from book where id = 99999;";
+    string sqlselect = "select * from book where id = 35;";
     string sqldelete = "delete from book where id = 5;";
 
     //sql = "Create table book (id int primary key, name varchar(50), age INT, unique(id));drop table book;";
     string rawsql = "insert into book values (";
     string endsql = ") ;";
+    string selectStartsql = "select * from book where id = ";
+    string selectEndsql = " ;";
 
     try
     {
@@ -68,26 +70,36 @@ int main()
        // interpreter.execute(sqldelete.c_str());
         //interpreter.execute(sql3.c_str());
 //
-//        for(int i = 0; i < 100000; i++)
-//        {
-//            stringstream ss;
-//            ss << i;
-//            string num;
-//            ss >> num;
-//            string sql4 = rawsql + num + endsql;
-//            interpreter.execute(sql4.c_str());
-//            //cout << sql4 << endl;
-//            //buffermanager.print();
-//
-//        }
-         cout << "good" << endl;
+    //    for(int i = 1001; i < 100000; i++)
+    //    {
+    //        stringstream ss;
+    //        ss << i;
+    //        string num;
+    //        ss >> num;
+    //        string sql4 = rawsql + num + endsql;
+    //        interpreter.execute(sql4.c_str());
+    //        //cout << sql4 << endl;
+    //        //buffermanager.print();
+
+    //    }
+    //      cout << "good" << endl;
+    // for(int i = 0; i < 1000; i++)
+    // {
+    //     stringstream ss;
+    //     ss << i;
+    //     string num;
+    //     ss >> num;
+    //     string batchSelectSql = selectStartsql + num + selectEndsql;
+    //     interpreter.execute(batchSelectSql.c_str());
+
+    // }
 
 //
-//         interpreter.execute(sql2.c_str());
-//
-//        interpreter.execute(sql1.c_str());
+    //     interpreter.execute(sql2.c_str());
 
-        catalogmanager.print();
+    //    interpreter.execute(sql1.c_str());
+
+        
         buffermanager.WriteAllBack();
 
     }

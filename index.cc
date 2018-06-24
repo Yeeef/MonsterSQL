@@ -6,12 +6,13 @@ bool IndexManager::insert(const string & index_name, const char * raw_data, int 
 {
     BPTreeKey entry(raw_data, recordID, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
+
+/*
+#if DEBUGINDEX
+    tree->debugPrint();
+#endif
+*/
     int ret = tree->insertKey(entry);
-
-//#if DEBUGINDEX
-//    tree->debugPrint();
-//#endif
-
     delete tree;
 
     if(ret  == BPRepeat)
@@ -28,11 +29,11 @@ int IndexManager::find(const string &index_name, const char *raw_data, int data_
     BPTreeKey entry(raw_data, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
     int ret = tree->findKey(entry);
-/*
-#if DEBUGINDEX
-    tree->debugPrint();
-#endif
-*/
+
+//#if DEBUGINDEX
+//    tree->debugPrint();
+//#endif
+
     delete tree;
     if(ret  == BPEmpty)
     {
@@ -40,6 +41,8 @@ int IndexManager::find(const string &index_name, const char *raw_data, int data_
     }else
         ret = entry.getPointer();
 
+    //todo
+   // cout << "IndexManager::find:: the pointer is " << ret<<endl;
     return ret;
 }
 
@@ -107,6 +110,9 @@ int IndexManager::remove(const string &index_name, const char *raw_data, int dat
         Error repeat("This key was existed in the Index Table!");
         throw repeat;
     }
+
+    //todo
+    cout << recordPointer << endl;
 
     return recordPointer;
 }

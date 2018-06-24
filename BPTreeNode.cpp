@@ -175,7 +175,7 @@ void BPTreeNode::split(BPTreeKey &entry, int nodeID) {
     }
     nodeSize /= 2;
     isDirty = true;
-    keys.resize((unsigned long)nodeSize);
+    keys.resize((unsigned long)nodeSize+1);
 }
 
 BPTreeKey& BPTreeNode::getEntry(int pos) {
@@ -258,24 +258,31 @@ int BPTreeNode::borrow(BPTreeKey &entry, BPTreeNode *sibling, bool isLeftSib, BP
 void BPTreeNode::mergeRightNode(bool isLeftSib, BPTreeNode *sibling, BPTreeKey& parentKey, BPTreeKey& entry) {
     if(isLeftSib)
     {
-        //设置返回要删除的值
-        entry = getEntry(1);
-        entry.setPointer(nodeId);
 
-        //修改指向下一个指针
-        BPTreeKey borrowEntry = getEntry(0);
-        borrowEntry.setKey(parentKey.getKeyRawData());
-        sibling->insertEntry(borrowEntry,sibling->getNodeSize()+1);
+        if(isLeaf)
+        {
+            //设置返回要删除的值
+            entry.setKey(getEntry(1).getKeyRawData(), nodeId);
+            //修改指向下一个指针
+            BPTreeKey borrowEntry (parentKey.getKeyRawData(),getEntry(0).getPointer() );
+            sibling->insertEntry(borrowEntry,sibling->getNodeSize()+1);
+        }
+
+
+
+
 
 
         int keyCount = getNodeSize();
         //逐一移动，把第一个key到最后一个key都搬过去
+        /*
         for(int i = 1; i <= keyCount; i++)
         {
             borrowEntry = getEntry(1);
             deleteEntry(1);
             sibling->insertEntry(borrowEntry, sibling->getNodeSize()+1);
         }
+        */
 
         deleteEntry(0);
         setRemoved();

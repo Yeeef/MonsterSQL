@@ -173,6 +173,7 @@ int BPTree::removeKey(BPTreeKey& entry, int* retPointer) {
 
     if(nodeCount == 0 )
     {
+        //todo
         cout << "[BPTree::removeKey] "<<" The index is empty! You can't delete anything!" << endl;
         ret =  BPDeleteFail;
     }else
@@ -235,22 +236,17 @@ int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, 
     BPTreeNode* node = new BPTreeNode(fileName.c_str(), nodeID, dataType);
     BPTreeNode* sibling = nullptr;
     int ret = BPNormal;
-    int res;
+
     //找到结点的位置
     int pos = node->findPosition_LowerBound(entry);
-    if(pos == -1)
-    {
-        cerr << "BPTree::remove::The node is empty!Your program is wrong!"<<endl;
-        res = BPDeleteFail;
-    }else
-    {
-        res = node->isleaf() ? BPDelete : remove(node->getkeyPointer(pos), entry, node->getkeyPointer(pos > 0? pos-1:pos + 1), pos > 0, retPointer, pos > 0? node->getEntry(pos-1):node->getEntry(pos));
-    }
+    //todo
+    assert(pos != -1);
+     int  res = node->isleaf() ? BPDelete : remove(node->getkeyPointer(pos), entry, node->getkeyPointer(pos > 0? pos-1:pos + 1), pos > 0, retPointer, pos > 0? node->getEntry(pos-1):node->getEntry(pos));
+
 
 
     //先判断是不是叶子，如果不是的话就进入下一层，如果是的话就BPDelete
     //这里逻辑略复杂：很明显这里不是叶节点，getkeyPointer(pos)返回的是下界的值，然后获取正确的下一层结点的number，正确！后面一个是和0比较，通过是否为1来判断是否为左兄弟，正确！
-    //todo://todo://todo://todo://todo:
     //parentKey的取法：有左兄弟，应该怎么样？有右兄弟又该取什么？
 
     // Check for duplicate
@@ -378,9 +374,6 @@ int BPTree::findKey(BPTreeKey &entry) {
     //当rootID为空时，自己创建一个root;
     if(nodeCount == 0 )
     {
-#if DEBUG
-        cout <<   "The index is empty!" << endl;
-#endif
         return BPEmpty;
     }else
     {
@@ -406,9 +399,6 @@ int BPTree::findKey(BPTreeKey &entry) {
                     break;
                 } else
                 {
-#if DEBUG
-                    cout <<   "The index is empty!" << endl;
-#endif
                     ret =  BPEmpty;
                     break;
                 }
@@ -580,20 +570,18 @@ void BPTree::debugPrint()
 void BPTree::debugPrint(int id)
 {
     BPTreeNode* node = new BPTreeNode(fileName.c_str(), id, keyLength);
-
+    cout << "nodeSize =  " << node->getNodeSize() << endl;
     cerr << "Block id = " << id << ", isLeaf = " << node->isleaf() << endl;
     cerr << "Keys:";
-//    for (int i = 1; i <= node->getNodeSize(); i++)
-//    {
-//        cerr << " ";
-//        const char* k = node->getEntry(i).getKeyRawData();
-//        for (int j = 0; j < keyLength; j++)
-//        {
-//            cerr << (int)k[j];
-//            if (j < keyLength-1)
-//                cerr << "~";
-//        }
-//    }
+    for (int i = 1; i <= node->getNodeSize(); i++)
+    {
+        if(i % 60 == 0)
+        {
+            cerr << endl;
+        }
+        const char* k = node->getEntry(i).getKeyRawData();
+        cerr << Method::rawdata2int(k) << " - ";
+    }
     cerr << endl;
     cerr << "Pointers: ";
     for (int i = 0; i <= node->getNodeSize(); i++)
