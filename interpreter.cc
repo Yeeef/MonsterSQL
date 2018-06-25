@@ -377,7 +377,7 @@ void Interpreter::select()
 
         // 运行时间
         
-        if (ifselected != 0 &&!fromFile)
+        if (!fromFile)
             cout << ifselected <<" record(s) selected. Query done in " << 1.0 * (toc-tic) / CLOCKS_PER_SEC << "s." << endl;
         
     /*    cout<<table_name<<endl;
@@ -429,12 +429,12 @@ void Interpreter::remove()
         //Delete
         int tic, toc;
         tic = clock();
-        int ifdeleted = api.Delete(table_name, attribute_name, condition, operand);
+        int NumOfAffected = api.Delete(table_name, attribute_name, condition, operand);
         toc = clock();
 
         //运行时间
-        if (ifdeleted == 1 &&!fromFile)
-            cout << " record(s) deleted. Query done in " << 1.0 * (toc-tic) / CLOCKS_PER_SEC << "s." << endl;
+        if (!fromFile)
+            cout << NumOfAffected << " record(s) deleted. Query done in " << 1.0 * (toc-tic) / CLOCKS_PER_SEC << "s." << endl;
 /* 
         cout<<table_name<< endl; 
          for(vector<string>::iterator iter=attribute_name.begin();iter!=attribute_name.end();++iter)

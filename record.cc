@@ -56,8 +56,9 @@ int RecordManager::select(const string & table_name, const vector<string> & attr
         {
             table->PrintRawdata(rawdata);
             cout << endl;
+            NumOfRecordAffected++;
         }
-        NumOfRecordAffected++;
+
         
     }
 
@@ -65,23 +66,40 @@ int RecordManager::select(const string & table_name, const vector<string> & attr
 
 }
 
-bool RecordManager::Delete(const string & table_name, const vector<string> & attribute_name, 
+int RecordManager::Delete(const string & table_name, const vector<string> & attribute_name, 
                         const vector<int> & condition, const vector<string> & operand)
 {
+    int NumOfRecordAffected = 0;
     CatalogManager & catalogmanager = MiniSQL::get_catalog_manager();
     const Table * table = catalogmanager.get_table(table_name);
     
     FileManager filemanager("data/" + table_name);
     int addr;
     char rawdata[table->get_record_length()];
+    if(condition.size() == 0)
+    {
+        while((addr = filemanager.getNextRecord(rawdata)) != -1)
+        {
+
+            filemanager.delete_record_ByAddr(addr);
+            NumOfRecordAffected++;
+
+
+        }
+        return NumOfRecordAffected;
+
+    }
+
     while((addr = filemanager.getNextRecord(rawdata)) != -1)
     {
         if(table->isSatisfyAllCondition(rawdata, attribute_name, condition, operand) == true)
         {
             filemanager.delete_record_ByAddr(addr);
-        }       
+            NumOfRecordAffected++;
+        }   
+        
     }
-    return true;
+    return NumOfRecordAffected;
 
 }
 

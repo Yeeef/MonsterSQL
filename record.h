@@ -18,7 +18,7 @@ class RecordManager
     // 找到对应条件的content并返回一个记录的rawdata，能不能在select里面直接打印？
     int select(const string & table_name, const vector<string> & attribute_name,
                         const vector<int> & condition, const vector<string> & operand);
-    bool Delete(const string & table_name, const vector<string> & attribute_name, 
+    int Delete(const string & table_name, const vector<string> & attribute_name, 
                         const vector<int> & condition, const vector<string> & operand);
     const char * GetRecordByAddr(const string & table_name, const int addr); 
     bool DeleteRecordByAddr(const string & table_name, const int addr);

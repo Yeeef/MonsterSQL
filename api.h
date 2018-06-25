@@ -11,7 +11,7 @@ class API
     bool create_table(const string &table_name, const Attribute &primary, const vector<Attribute> &attributes) const throw(Error);
     bool drop_table(const string &table_name) const throw(Error);
     bool insert(const string &table_name, const vector<string> &insert_data, const vector<int> &type) const throw(Error);
-    bool Delete(const string &table_name, const vector<string> &attribute_name,
+    int Delete(const string &table_name, const vector<string> &attribute_name,
                 const vector<int> &condition, const vector<string> &operand) const throw(Error);
     int select(const string &table_name, const vector<string> &attribute_name,
                 const vector<int> &condition, const vector<string> &operand) const throw(Error);

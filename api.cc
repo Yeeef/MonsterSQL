@@ -16,8 +16,15 @@ bool API::create_table(const string &table_name, const Attribute &primary, const
         recordmanager.create_table(table_name);
         string index_name;
         // 默认的index名 table+primary
-        Method::setIndexFromTableAttri(table_name, primary.get_name(), index_name);
-        create_index(table_name, primary.get_name(), index_name);
+        for(auto Attri : attributes)
+        {
+            if(Attri.is_unique() == true || Attri.is_primary() == true)
+            {
+                Method::setIndexFromTableAttri(table_name, Attri.get_name(), index_name);
+                create_index(table_name, Attri.get_name(), index_name);
+
+            }
+        }
 
         return true;
     }
@@ -72,6 +79,7 @@ bool API::drop_table(const string &table_name) const throw(Error)
 bool API::insert(const string &table_name, const vector<string> &insert_data, const vector<int> &type) const throw(Error)
 {
 
+
     bool ret;
 
     // 获取catalogmanager
@@ -90,7 +98,7 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
         const Table *table = catalogmanager.get_table(table_name);
 
         // parse data
-        rawdata = new char[table->get_record_length()];
+        rawdata = new char[table->get_record_length()]();
         // judge whether insert_data is a valid input due to the insert_data
         // At the meantime, convert the insert_data into raw_data
         table->isValidInput(insert_data, type, raw_Vec);
@@ -101,6 +109,7 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
         //我还需要知道插入后的 record_id
         // Pointer 就是我要的信息
 
+        
         for (int i = 0; i < table->attri_name.size(); i++)
         {
             string index_name;
@@ -113,21 +122,23 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
                     cout << "[API::insert] duplicate record" << endl;
                     return false;
                 }
-                break;
+              
 
             }
                 
         }
+        
 
         const int addr = recordmanager.insert(table_name, rawdata);
 
-
+        
         for (int i = 0; i < table->attri_name.size(); i++)
         {
             string index_name;
             if (table->isIndex(table->attri_name.at(i), index_name))
                 indexmanager.insert(index_name, raw_Vec.at(i), type.at(i), addr);
         }
+        
 
 
         ret = true;
@@ -146,7 +157,7 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
     return ret;
 }
 
-bool API::Delete(const string &table_name, const vector<string> &attribute_name,
+int API::Delete(const string &table_name, const vector<string> &attribute_name,
                  const vector<int> &condition, const vector<string> &operand) const throw(Error)
 {
     CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();

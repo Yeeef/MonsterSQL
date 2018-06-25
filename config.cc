@@ -37,10 +37,11 @@ void Table::PrintRawdata(const char * rawdata) const
                 stringstream ss;
                 ss << data;
                 ss >> PrintData;
+                break;
             }
             default:
             {
-                Method::rawdata2string(rawdata, length, PrintData);
+                Method::rawdata2string(rawdata + Pos, length, PrintData);
             }
         }
         cout << PrintData << "\t";
@@ -146,20 +147,49 @@ bool Table::isValidInput(const vector<string> &insert_data,
 
     for (int i = 0; i < attribute_count; i++)
     {
-        if (type.at(i) != typeVec.at(i))
+        switch(type.at(i))
         {
+            case TYPE_INT:
+            {
+                if(typeVec.at(i) != TYPE_INT)
+                {
+                    Error err("[Table::isValidInput]: insert_data type mismatch");
+                    throw err;
+                    return false;
+                }
 
-            Error err("[Table::isValidInput]: insert_data type mismatch");
-            throw err;
-            return false;
+                break;
+            }
+            case TYPE_FLOAT:
+            {
+                if(typeVec.at(i) != TYPE_FLOAT)
+                {
+                    Error err("[Table::isValidInput]: insert_data type mismatch");
+                    throw err;
+                    return false;
+                }
+                break;
+            }
+            default:
+            {
+                if(type.at(i) > typeVec.at(i))
+                {
+                    Error err("[Table::isValidInput]: insert_data type mismatch");
+                    throw err;
+                    return false;
+
+                }
+                break;
+            }
         }
+
     }
     /* ---------------------------------------- */
 
     /* parse data */
     for (int i = 0; i < attribute_count; i++)
     {
-        char *rawdata = new char[Method::getLengthFromType(type.at(i))];
+        char *rawdata = new char[Method::getLengthFromType(type.at(i)) + 1]();
         Method::string2rawdata(insert_data.at(i), type.at(i), rawdata);
         // 翻译好的数据加入 raw_vec
         raw_Vec.push_back(rawdata);
@@ -266,7 +296,8 @@ void Method::string2rawdata(const string &str, const int type, char *rawdata)
         //actually it's type_char
         // type_char的大小就代表了长度！
         int length = Method::getLengthFromType(type);
-        ss >> rawdata;
+        memcpy(rawdata, str.c_str(), length);
+        memset(rawdata + length, 0, 1);
         break;
     }
     }
@@ -553,7 +584,7 @@ bool Method::isSatisfyConditon(const char *rawdata, const int cond, const string
         float data = Method::rawdata2float(rawdata);
         char Operand[Method::getLengthFromType(type)];
         Method::string2rawdata(operand, type, Operand);
-        float operandValue = Method::rawdata2int(Operand);
+        float operandValue = Method::rawdata2float(Operand);
         return Method::isSatisfy(data, cond , operandValue);
         break;
     }
