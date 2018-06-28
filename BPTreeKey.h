@@ -14,7 +14,7 @@ public:
      */
     BPTreeKey(const BPTreeKey& copy);
     BPTreeKey(const char* rawData, int pointerID, int data_type);
-    BPTreeKey(const char* rawData, int data_type);
+    //BPTreeKey(const char* rawData, int data_type);
     /*
      * default pointerID = -1; dataType = TYPE_INT;
      */

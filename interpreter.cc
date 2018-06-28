@@ -431,6 +431,8 @@ void Interpreter::remove()
         tic = clock();
         int NumOfAffected = api.Delete(table_name, attribute_name, condition, operand);
         toc = clock();
+        if(NumOfAffected < 0)
+            NumOfAffected = 0;
 
         //运行时间
         if (!fromFile)
@@ -968,15 +970,15 @@ void Interpreter::insert()
     int tic, toc;
     bool res;
 
-    //tic = clock();
+    tic = clock();
     res = api.insert(table_name, data, datatype);
-    //toc = clock();
+    toc = clock();
 
     //运行时间
-    /*
+    
     if (res &&!fromFile)
         cout << "1 record inserted. Query done in " << 1.0 * (toc-tic) / CLOCKS_PER_SEC << "s." << endl;
-    */
+    
      /*
     cout<<table_name<<endl;
       for(vector<string>::iterator iter=data.begin();iter!=data.end();++iter)
@@ -1018,7 +1020,7 @@ void Interpreter::execfile()
     }
 
     // 读取文件
-    ifstream file(filename);
+    ifstream file(Method::AbsolutePath(filename));
     if (!file.is_open())
     {
         cerr << "ERROR: [Interpreter::execfile] Cannot load file " << filename << "!" << endl;
@@ -1046,8 +1048,10 @@ void Interpreter::execfile()
 // 退出
 void Interpreter::exit()
 {
+    BufferManager & buffermanager = MiniSQL::get_buffer_manager();
     ptr++;
     if (type[ptr] != END)
+
     {
         reportUnexpected("exit", "';'");
         return;
@@ -1060,6 +1064,7 @@ void Interpreter::exit()
         cout << "Bye~ :)" << endl;
         exiting = true;
     }
+    buffermanager.WriteAllBack();
 }
 
 

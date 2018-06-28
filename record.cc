@@ -69,9 +69,14 @@ int RecordManager::select(const string & table_name, const vector<string> & attr
 int RecordManager::Delete(const string & table_name, const vector<string> & attribute_name, 
                         const vector<int> & condition, const vector<string> & operand)
 {
+
+    IndexManager & indexmanager = MiniSQL::get_index_manager();
     int NumOfRecordAffected = 0;
     CatalogManager & catalogmanager = MiniSQL::get_catalog_manager();
     const Table * table = catalogmanager.get_table(table_name);
+    vector <Attribute> AttriIndexed;
+    table->GetAttriIndexed(AttriIndexed);
+    
     
     FileManager filemanager("data/" + table_name);
     int addr;
@@ -81,6 +86,22 @@ int RecordManager::Delete(const string & table_name, const vector<string> & attr
         while((addr = filemanager.getNextRecord(rawdata)) != -1)
         {
 
+            for(auto attri : AttriIndexed)
+            {
+                char keydata[attri.get_length()];
+                string index_name;
+                Method::setIndexFromTableAttri(table_name, attri.get_name(), index_name);
+                int Pos = table->GetPosByName(attri.get_name());
+                int datatype = attri.get_type();
+                memcpy(keydata, rawdata + Pos, attri.get_length());
+
+                if(indexmanager.remove(index_name, keydata, datatype) < 0)
+                {
+                    cout << Method::rawdata2int(keydata) << endl;
+
+                }
+
+            }
             filemanager.delete_record_ByAddr(addr);
             NumOfRecordAffected++;
 
@@ -94,6 +115,17 @@ int RecordManager::Delete(const string & table_name, const vector<string> & attr
     {
         if(table->isSatisfyAllCondition(rawdata, attribute_name, condition, operand) == true)
         {
+            for(auto attri : AttriIndexed)
+            {
+                char keydata[attri.get_length()];
+                string index_name;
+                Method::setIndexFromTableAttri(table_name, attri.get_name(), index_name);
+                int Pos = table->GetPosByName(attri.get_name());
+                int datatype = attri.get_type();
+                memcpy(keydata, rawdata + Pos, attri.get_length());
+                cout << Method::rawdata2float(keydata) << endl;
+                indexmanager.remove(index_name, keydata, datatype);
+            }
             filemanager.delete_record_ByAddr(addr);
             NumOfRecordAffected++;
         }   

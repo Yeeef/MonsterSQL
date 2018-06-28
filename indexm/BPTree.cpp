@@ -552,10 +552,10 @@ int BPTree::findKey(BPTreeKey &entry) {
  */
 
 void BPTree::initialIndex(const string & table_name,const string & attribute_name,int recordLength, int posinRecord) {
-    FileManager file(table_name);
+    FileManager file("data/" + table_name);
     char * rawData = new char[recordLength];
     int pos;
-    while((pos = file.getNextRecord(rawData)) < 0)
+    while((pos = file.getNextRecord(rawData)) > 0)
     {
         //如何剪切rawData指针存到entry里
         Method::Cutrawdata(dataType, posinRecord, rawData);

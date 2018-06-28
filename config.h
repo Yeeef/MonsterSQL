@@ -7,7 +7,8 @@
 #include <unordered_map>
 #include <unordered_set>
 #define DEBUG -1
-#define DEBUGINDEX -1
+
+
 #define PATH "/Users/yee/Desktop/monster-sql/MiniSQL/cmake/"
 
 
@@ -220,7 +221,32 @@ class Table
     : table_name(table_name), attribute_count(attribute_count) { }
 
     void setAttriPos();
+    int GetPosByName(const string & AttriName) const
+    {
+        return Name2Pos.at(AttriName);
+    }
+    void DropIndex(const string & index_name)
+    {
+        for(auto attri_index : Attri2Index)
+        {
+            if(attri_index.second->get_index_name() == index_name)
+            {
+                Attri2Index.erase(attri_index.first);                
+            }
+        }
+    }
+    bool isUnique(const string & attri_name) const
+    {
+        auto search = UniqueAttri.find(attri_name);
+        if(search == UniqueAttri.end())
+            return false;
+        else
+            return true; 
+            
+    }
+
     void PrintRawdata(const char * rawdata) const;
+    void PrintTableHead() const;
     bool isSatisfyAllCondition(const char * rawdata, const vector<string> & attribute_name,
     const vector<int> & condition, const vector<string> & operand) const ;
     bool isIndex(const string & attri_name, string & index_name) const
@@ -244,6 +270,15 @@ class Table
     int get_record_length() const { return record_length; }
     int get_attribute_count() const {return attribute_count; }
     void get_indices(vector <string> & indicesName) const ;
+    void GetAttriIndexed(vector <Attribute> & AttriIndexed) const
+    {
+        for(auto attri : Attri2Index)
+        {
+            string attriName = attri.first;
+            AttriIndexed.push_back(Name2Attri.at(attriName));
+
+        }
+    }
     void set_map_Attri2Index(const string & attribute_name, Index * index)
     {
         Attri2Index.insert({attribute_name, index});

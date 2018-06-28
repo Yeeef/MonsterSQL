@@ -81,7 +81,14 @@ class Interpreter
     Interpreter(bool _fromFile = false);
     ~Interpreter();
     
-    bool isExiting() const;
+    bool isTokenEmpty()
+    {
+        return !!tokens.size();
+    }
+    bool isExiting() const
+    {
+        return exiting;
+    }
     void execute(const char* sql);
 
 /*

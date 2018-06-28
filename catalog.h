@@ -51,7 +51,7 @@ class CatalogManager
     void setMapName2Index(const string & index_name, const Index * index);
     bool create_index(const string & index_name, 
                       const string & table_name, const string & attribute_name) throw(Error);
-    bool drop_index(const string & index_name) throw(Error); 
+    bool drop_index(const string & index_name, const string & table_name) throw(Error); 
 
     
 

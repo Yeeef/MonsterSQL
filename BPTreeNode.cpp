@@ -191,7 +191,7 @@ BPTreeKey& BPTreeNode::getEntry(int pos) {
 
 void BPTreeNode::setKey(int pos, BPTreeKey& entry) {
 #if DEBUG
-    if (pos > nodeSize || pos <= 0)
+    if (pos > nodeSize || pos < 0)
     {
         cerr << "ERROR: [BPTreeNode::setKey] Position " << pos << " out of range!" << endl;
         return;
@@ -229,93 +229,153 @@ int BPTreeNode::getkeyPointer(int keyID) {
 
 int BPTreeNode::borrow(BPTreeKey &entry, BPTreeNode *sibling, bool isLeftSib, BPTreeKey &parentKey) {
     //左兄弟就把左边最后一位让出来，
+    int ret = BPNormal;
     if(isLeftSib)
     {
-        BPTreeKey borrowEntry = sibling->getEntry(sibling->getNodeSize());
-        sibling->deleteEntry(sibling->getNodeSize());
-        keys.insert(keys.begin(), borrowEntry);
-        nodeSize++;
-        keys[1] = borrowEntry;
-        //修改父节点的值为当前结点值
-        parentKey.setKey(keys[1].getKeyRawData());
+        if(isLeaf)
+        {
+            //cout <<"BPTreeNode::borrow: line 237 : " <<Method::rawdata2int(sibling->keys[sibling->getNodeSize()].getKeyRawData()) << endl;
+            keys.emplace(keys.begin()+1, sibling->keys[sibling->getNodeSize()].getKeyRawData(), sibling->keys[sibling->getNodeSize()].getPointer(), data_type);
+            sibling->deleteEntry(sibling->getNodeSize());
+            //修改父节点的值
+            parentKey.setKey(keys[1].getKeyRawData());
 
-        isDirty = true;
-        nodeSize++;
-        return BPNormal;
+
+        }else
+        {
+            //插入第零个指针
+            keys.emplace(keys.begin(), nullptr, sibling->keys[sibling->getNodeSize()].getPointer(),data_type );
+            //设置第一个指针
+            keys[1].setKey(parentKey.getKeyRawData());
+
+            //修改父节点的值为借过来的节点的值
+            parentKey.setKey(sibling->keys[sibling->getNodeSize()].getKeyRawData());
+
+            //删除左兄弟的第一个结点
+            sibling->deleteEntry(sibling->getNodeSize());
+        }
+
+
+
+
     }else
     {
-        BPTreeKey borrowEntry = sibling->getEntry(0);
-        sibling->deleteEntry(0);
-        //更新entry
-        borrowEntry.setKey(parentKey.getKeyRawData());
-        insertEntry(borrowEntry, getNodeSize());
-        //修改父结点
-        entry.setKey(sibling->getEntry(1).getKeyRawData());
-        return BPChange;
+        if(isLeaf)
+        {
+            keys.emplace_back(sibling->keys[1].getKeyRawData(), sibling->keys[1].getPointer() ,data_type);
+            sibling->deleteEntry(1);
+            parentKey.setKey(sibling->keys[1].getKeyRawData());
+
+        } else
+        {
+            keys.emplace_back(parentKey.getKeyRawData(), sibling->keys[0].getPointer() ,data_type);
+            //删除兄弟的第一个节点
+            sibling->deleteEntry(0);
+
+            //修改父节点的key
+            parentKey.setKey(sibling->keys[0].getKeyRawData());
+
+            sibling->keys[0].setKey(nullptr);
+        }
     }
+
+
+    isDirty = true;
+    nodeSize++;
+    return BPChangeEnd;
 }
 
-void BPTreeNode::mergeRightNode(bool isLeftSib, BPTreeNode *sibling, BPTreeKey& parentKey, BPTreeKey& entry) {
+void BPTreeNode::mergeRightNode(bool isLeftSib, BPTreeNode *sibling, const BPTreeKey& parentKey, BPTreeKey& entry) {
     if(isLeftSib)
     {
 
         if(isLeaf)
         {
-            //设置返回要删除的值
+            //修改左兄弟指向下一个结点的指针
+            BPTreeKey borrowEntry (nullptr,getEntry(0).getPointer() ,data_type);
+            sibling->setKey(0, borrowEntry);
+
+            //设置返回要被修改的值
             entry.setKey(getEntry(1).getKeyRawData(), nodeId);
-            //修改指向下一个指针
-            BPTreeKey borrowEntry (parentKey.getKeyRawData(),getEntry(0).getPointer() );
-            sibling->insertEntry(borrowEntry,sibling->getNodeSize()+1);
-        }
 
 
 
-
-
-
-        int keyCount = getNodeSize();
-        //逐一移动，把第一个key到最后一个key都搬过去
-        /*
-        for(int i = 1; i <= keyCount; i++)
+        }else //针对非叶节点
         {
-            borrowEntry = getEntry(1);
-            deleteEntry(1);
-            sibling->insertEntry(borrowEntry, sibling->getNodeSize()+1);
-        }
-        */
+            //修改左兄弟指向下一个结点的指针
+            sibling->keys.emplace_back(parentKey.getKeyRawData(), keys[0].getPointer(),data_type);
 
-        deleteEntry(0);
+            //设置返回要被修改的值
+            entry.setKey(parentKey.getKeyRawData(), nodeId);
+
+        }
+
+        //逐一移动，把第一个key到最后一个key都搬过去
+        for(int i = 1; i <= this->getNodeSize(); i++)
+        {
+            sibling->keys.emplace_back(keys[i].getKeyRawData(), keys[i].getPointer(),data_type);
+        }
+
+        sibling->isDirty= true;
+        sibling->nodeSize =(int)(sibling->keys.size() - 1);
         setRemoved();
 
     }else
     {
-        /*
-         * 右结点，删除的是sibling，留下的是自己
-         */
-        //设置返回要删除的值
-        //todo:用了一个=重载，注意看有没有错
-        entry = sibling->getEntry(1);
-        entry.setPointer(sibling->getNodeID());
+        //右兄弟
 
-        //插入第一个特殊值
-        //取右兄弟的第一个值
-        //把父节点的key赋给它
-        //插入到当前结点
-        //删去右兄弟的第一个
-        BPTreeKey borrowEntry = sibling->getEntry(0);
-        borrowEntry.setKey(parentKey.getKeyRawData());
-        insertEntry(borrowEntry,getNodeSize()+1);
-
-        int keyCount = sibling->getNodeSize();
-        for(int i = 1; i<= keyCount; i++)
+        if(isLeaf)
         {
-            borrowEntry = sibling->getEntry(1);
-            sibling->deleteEntry(1);
-            insertEntry(borrowEntry, sibling->getNodeSize()+1);
+            //修改左兄弟指向下一个结点的指针
+            BPTreeKey borrowEntry (nullptr,sibling->getEntry(0).getPointer() ,data_type);
+            setKey(0, borrowEntry);
+
+            //设置返回要被修改的值
+            entry.setKey(sibling->getEntry(1).getKeyRawData(), sibling->nodeId);
+
+
+        }
+        else
+        {
+            //修改左兄弟指向下一个结点的指针
+            keys.emplace_back(parentKey.getKeyRawData(), sibling->keys[0].getPointer(),data_type);
+
+            //设置返回要被修改的值
+            entry.setKey(parentKey.getKeyRawData(), sibling->nodeId);
         }
 
-        sibling->deleteEntry(0);
+        //逐一移动，把第一个key到最后一个key都搬过去
+        for(int i = 1; i <= sibling->getNodeSize(); i++)
+        {
+            keys.emplace_back(sibling->keys[i].getKeyRawData(), sibling->keys[i].getPointer(), data_type);
+        }
+
+        isDirty= true;
+        nodeSize = (int)(keys.size() - 1);
         sibling->setRemoved();
+
+//        entry = sibling->getEntry(1);
+//        entry.setPointer(sibling->getNodeID());
+//
+//        //插入第一个特殊值
+//        //取右兄弟的第一个值
+//        //把父节点的key赋给它
+//        //插入到当前结点
+//        //删去右兄弟的第一个
+//        BPTreeKey borrowEntry = sibling->getEntry(0);
+//        borrowEntry.setKey(parentKey.getKeyRawData());
+//        insertEntry(borrowEntry,getNodeSize()+1);
+//
+//        int keyCount = sibling->getNodeSize();
+//        for(int i = 1; i<= keyCount; i++)
+//        {
+//            borrowEntry = sibling->getEntry(1);
+//            sibling->deleteEntry(1);
+//            insertEntry(borrowEntry, sibling->getNodeSize()+1);
+//        }
+//
+//        sibling->deleteEntry(0);
+//        sibling->setRemoved();
 
     }
 }
@@ -345,7 +405,23 @@ int BPTreeNode::findPosition_LowerBound(const BPTreeKey &key) {
  * 前面的循环找到的上界，（需要测试）
  * 论及getKeyPointer 对叶节点我需要的是个上界，对内子结点我需要的是个下界
  * 论及插入，需要的都是上界
+ * 把相等归属为下界
  */
+
+//int BPTreeNode::findPosition_UpperBound(const BPTreeKey &key)
+//{
+//    for(int i=1; i<=nodeSize; i++)
+//    {
+//        if(keys[i] < key)
+//            return i;
+//    }
+//
+//    return nodeSize+1;
+//}
+
+
+
+
 
 int BPTreeNode::findPosition_UpperBound(const BPTreeKey &key) {
 
@@ -355,11 +431,26 @@ int BPTreeNode::findPosition_UpperBound(const BPTreeKey &key) {
     //todo
     if(low > high )
     {
-        cout <<"BPTreeNode::findPosition"<< "The node is empty!" << endl;
+        cout <<"BPTreeNode::findPosition "<< "The node is empty!" << endl;
         return -1;
     }
 
-    //需要插在最后一个
+//    //需要插在最后一个
+//    if(keys[high] < key ) return nodeSize+1;
+//
+//    while (high > low)
+//    {
+//        if( keys[middle] > key )
+//            high = middle;
+//        else
+//        if(keys[middle] == key)
+//            return middle;
+//        else
+//            low = middle + 1;
+//
+//        middle = (low + high) / 2;
+//    }
+
     if(keys[high] < key ) return nodeSize+1;
 
     while (high > low)
@@ -371,6 +462,13 @@ int BPTreeNode::findPosition_UpperBound(const BPTreeKey &key) {
 
         middle = (low + high) / 2;
     }
-
     return middle ;
+}
+
+bool BPTreeNode::isUnderflow(int rootID) {
+    if(nodeId != rootID)
+     return  nodeSize < ceil(nodeCapability / 2.0);
+    else
+        return false;
+
 }

@@ -266,6 +266,15 @@ const string & table_name, const string & attribute_name) throw(Error)
         throw err;
     }
 
+    // 必须是unique属性
+    if(Name2Table.at(table_name)->isUnique(attribute_name) == false)
+    {
+        string err_info = "[CatalogManager::create_index] attribute '" + attribute_name + "' is not unique";
+        Error err(err_info);
+        throw err;
+
+    }
+
     /* -------------------------------------------------- */
 
     //为catalog填充index信息，并在IndexMeta/indices中添加记录
@@ -289,7 +298,7 @@ const string & table_name, const string & attribute_name) throw(Error)
  * 删除catalog中的map;在catalog的两个map均要处理；对应文件要删除一个记录
  * 删除index_manager中的文件
  */
-bool CatalogManager::drop_index(const string & index_name) throw(Error)
+bool CatalogManager::drop_index(const string & index_name, const string & table_name) throw(Error)
 {
     /* 错误检查 */
     auto search = Name2Index.find(index_name);
@@ -301,12 +310,16 @@ bool CatalogManager::drop_index(const string & index_name) throw(Error)
         return false;
     }
     /* ----------------- */
-    delete search->second;
+    Name2Table.at(table_name)->DropIndex(index_name); // map删除
+
+    delete search->second; // 指针删除
     Name2Index.erase(search);
 
     int addr = IndexName2Addr.at(index_name);
     IndexFile.delete_record_ByAddr(addr);
     IndexName2Addr.erase(index_name);
+   
+    
     return true;
 }
 
@@ -360,7 +373,9 @@ void CatalogManager::print()
 {
     for(auto tablemap : Name2Table)
     {
+        vector <string> index_name;
         Table * table = tablemap.second;
+
         cout << tablemap.first << " ";
         cout << table->get_record_length() << " ";
         table->print();

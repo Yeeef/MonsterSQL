@@ -35,6 +35,8 @@ void BPTree::updateHeader() {
 
     BufferManager & manager = MiniSQL::get_buffer_manager();
     Block* header = manager.getBlock(fileName, 0);
+    if(nodeCount == 0)
+        firstEmptyBlock = -1;
 
     memcpy(header->getContent(), &firstEmptyBlock, 4);
     memcpy(header->getContent() +4, &nodeCount, 4);
@@ -159,6 +161,7 @@ int BPTree::insertKey(BPTreeKey & entry) {
 
     updateHeader();
     return ret;
+
 }
 /*
  * 利用递归执行更新B+树的操作
@@ -184,13 +187,8 @@ int BPTree::removeKey(BPTreeKey& entry, int* retPointer) {
         if(node->isleaf())
         {
             //处理只有一个节点情况
-            int pos = node->findPosition_UpperBound(entry);
-            if(pos == -1)
-            {
-                cout << "BPTree::removeKey:findPosition_UpperBound has wrong! " << endl;
-                ret = BPDeleteFail;
-            }
-            else if(pos <= node->getNodeSize() && node->getEntry(pos) == entry)
+            int pos = node->findPosition_LowerBound(entry);
+            if(pos <= node->getNodeSize() && node->getEntry(pos) == entry)
             {
                 *retPointer = node->getEntry(pos).getPointer();
                 node->deleteEntry(pos);
@@ -213,18 +211,16 @@ int BPTree::removeKey(BPTreeKey& entry, int* retPointer) {
             assert(pos != -1);
 
             //从root开始处理
-            ret = remove(nodeID, entry,-1,false, retPointer, pos > 1? node->getEntry(pos-1):node->getEntry(pos));
+            BPTreeKey temp(nullptr, -1, dataType);
+            ret = remove(nodeID, entry,-1,false, retPointer, temp);
 
-            if( ret == BPDeleteFail)
-            {
-                //todo
-                cout << "[BPTree::removeKey] "<<" This record was not exsited in the index!" << endl;
-                ret =  BPDeleteFail;
-            }
         }
         delete node;
     }
     updateHeader();
+//#if DEBUGINDEX
+//    debugPrint();
+//#endif
 
     return ret;
 }
@@ -239,10 +235,9 @@ int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, 
 
     //找到结点的位置
     int pos = node->findPosition_LowerBound(entry);
-    //todo
-    assert(pos != -1);
-     int  res = node->isleaf() ? BPDelete : remove(node->getkeyPointer(pos), entry, node->getkeyPointer(pos > 0? pos-1:pos + 1), pos > 0, retPointer, pos > 0? node->getEntry(pos-1):node->getEntry(pos));
 
+    //cout <<"nodeID: " << node->getNodeID() <<  " -- parentKey" << Method::rawdata2int(temp.getKeyRawData()) << endl;
+    int  res = node->isleaf() ? BPDelete : remove(node->getkeyPointer(pos), entry, node->getkeyPointer(pos > 0? pos-1:pos + 1), pos > 0, retPointer, node->getEntry(pos > 0? pos:pos+1));
 
 
     //先判断是不是叶子，如果不是的话就进入下一层，如果是的话就BPDelete
@@ -250,25 +245,29 @@ int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, 
     //parentKey的取法：有左兄弟，应该怎么样？有右兄弟又该取什么？
 
     // Check for duplicate
-    if (res == BPDelete)
-    {
+    if (res == BPDelete) {
         //开始删除entry
         //因为无论是跟节点还是叶子结点，都能够保证第一个不会被删除
         //内结点：总是删除右侧的那个节点
         //先检查要删除的是否存在
-        if(node->isleaf())
-        {
-            if(entry != node->getEntry(pos))
-            {
+        if (node->isleaf()) {
+            if (pos == 0) {
+                cout << "[BPTree::remove]line 252" << "The key you want to delete is not in the table!" << endl;
+                ret = BPDeleteFail;
+            } else if (entry != node->getEntry(pos)) {
 
-                cout <<"[BPTree::remove]line 252" << "The key you want to delete is not in the table!" << endl;
+                cout << "[BPTree::remove]line 252" << "The key you want to delete is not in the table!" << endl;
                 ret = BPDeleteFail;
             }
 
             //把要删除的key的pointer传出去！
             *retPointer = node->getEntry(pos).getPointer();
+            res = node->deleteEntry(pos);
+        } else {
+            pos = node->findPosition_LowerBound(entry);
+            res = node->deleteEntry(pos);
         }
-        res = node->deleteEntry(pos);
+
 
 
 
@@ -276,17 +275,28 @@ int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, 
         //如果是根节点
         if(nodeID == RootID)
         {
-            if(node->getNodeSize() == 0)
-            {
-                //彻底清空
-                removeBlock(nodeID);
-                node->setRemoved();
+            if(node->getNodeSize() == 0 ) {
+                if (node->getEntry(0).getPointer() == -1) {
+                    //彻底清空
+                    removeBlock(nodeID);
+                    RootID = -1;
+                    firstLeftBlock = -1;
+                    mostRightBlock = -1;
+                    firstEmptyBlock = -1;
+                    node->setRemoved();
+                } else {
 
+                    removeBlock(RootID);
+                    node->setRemoved();
+                    RootID = node->getEntry(0).getPointer();
+
+
+                }
             }
         }
 
         //删除没有出错并且underflow
-        if(res != BPDeleteFail && node->isUnderflow())
+        if(res != BPDeleteFail && node->isUnderflow(RootID) && (node->getRemoved()!=true))
         {
             //把兄弟结点new出来
             sibling = new BPTreeNode(fileName.c_str(), siblingID, dataType);
@@ -296,27 +306,55 @@ int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, 
             {
                 ret = node->borrow(entry,sibling, isLeftSib, parentKey);
 
-            }
-
-
-            else if(sibling->getNodeSize() == sibling->getUpperBound())
+            }else if(sibling->getNodeSize() == sibling->getUpperBound())
             {
                 //需要合并两个结点
-                //叶结点和非叶节点的删除几乎一样，无需区分
+                //在mergeRight里面会区分叶节点
                 node->mergeRightNode(isLeftSib, sibling, parentKey, entry);
-                if(isLeftSib)
+
+                //返回的entry记录了应该删除哪个结点
+                removeBlock(entry.getPointer());
+
+
+                //维护下mostRightBlock
+                if(entry.getPointer() == mostRightBlock)
                 {
-                    removeBlock(node->getNodeID());
-                }else removeBlock(sibling->getNodeID());
+                    if(isLeftSib)
+                        mostRightBlock = sibling->getNodeID();
+                    else
+                    {
+                        if(node->getNodeID() == -1)
+                            mostRightBlock = nodeID;
+                        else mostRightBlock = node->getNodeID();
+                    }
+                }
                 ret = BPDelete;
+
             }
+
+            delete sibling;
 
             //返回true说明需要删除右边的结点
             //在mergeRight操作里面我们需要调整两个节点里的内容
             //同时我们需要调整entry的值，变成一个node的key
 
-        }else if(res == BPDeleteFail)
+        } else if(res == BPDeleteFail)
             ret = BPDeleteFail;
+            //node->getNodeID()!= RootID 用来保证parentKey不为null
+        else if(node->isleaf() && node->getNodeID()!= RootID && pos == 1)
+        {
+            if(isLeftSib)
+            {
+                //只用修改父亲结点的值
+                parentKey.setKey(node->getEntry(1).getKeyRawData());
+                //cout << Method::rawdata2int(parentKey.getKeyRawData());
+                ret = BPChangeEnd;
+            } else if(nodeID != firstLeftBlock)
+            {
+                entry.setKey(node->getEntry(1).getKeyRawData());
+                ret = BPChange;
+            }else ret = BPNormal;
+        }
         else
             ret = BPNormal;
 
@@ -324,44 +362,47 @@ int BPTree::remove(int nodeID, BPTreeKey &entry, int siblingID, bool isLeftSib, 
     }else if(res == BPChange)
     {
         //如何一层层修改他的值，如果是动的是右结点，就要一层层修改值
-        if(isLeftSib)
-        {
-            node->getEntry(pos-1).setKey(entry.getKeyRawData());
-            if((pos-1) == 1)
-                ret = BPChange;
-        } else
+        if(pos != 0)
         {
             node->getEntry(pos).setKey(entry.getKeyRawData());
-            ret = BPChange;
-        }
+            node->setDirty();
+            ret = BPNormal;
+        }else ret = BPChange;
 
-    }if (res == BPDeleteFail)
+    }else if(res == BPChangeEnd)
+    {
+        node->setDirty();
+        ret = BPNormal;
+    } else if (res == BPDeleteFail)
     {
         ret = BPDeleteFail;
     }
 
     delete node;
-    delete sibling;
+
     return ret;
 }
 
 
 
-void BPTree::removeBlock(int id) {
+
+void BPTree::removeBlock(int id)
+{
     BufferManager& manager = MiniSQL::get_buffer_manager();
     Block* block = manager.getBlock(fileName, id);
     memcpy(block->getContent(), &firstEmptyBlock, 4);
     firstEmptyBlock = id;
     nodeCount--;
+    if(nodeCount == 0)
+    {
+        firstLeftBlock = -1;
+        mostRightBlock = -1;
+        RootID = -1;
+        firstLeftBlock = -1;
+    }
 
     //总是删掉右侧结点，所以不用担心firstLeftBlock的问题
     //此刻删除的是唯一的根结点
-    if(id == RootID && firstLeftBlock == RootID)
-    {
-        RootID = -1;
-        firstLeftBlock = -1;
-        mostRightBlock = -1;
-    }
 
     block->set_dirty(true);
 }
@@ -391,7 +432,11 @@ int BPTree::findKey(BPTreeKey &entry) {
             {
                 //todo:去掉assert
                 assert(pos <= node->getNodeSize());
-
+                if (pos == 0) {
+                    //cout << "[BPTree::find]line 425" << "The key you want to find is not in the table!" << endl;
+                    ret = BPEmpty;
+                    break;
+                } else
                 if(node->getEntry(pos) == entry)
                 {
                     entry.setPointer(node->getEntry(pos).getPointer());
@@ -534,10 +579,10 @@ int BPTree::findKey(BPTreeKey &entry) {
  */
 
 void BPTree::initialIndex(const string & table_name,const string & attribute_name,int recordLength, int posinRecord) {
-    FileManager file(table_name);
+    FileManager file("data/" + table_name);
     char * rawData = new char[recordLength];
     int pos;
-    while((pos = file.getNextRecord(rawData)) < 0)
+    while((pos = file.getNextRecord(rawData)) > 0)
     {
         //如何剪切rawData指针存到entry里
         Method::Cutrawdata(dataType, posinRecord, rawData);
@@ -570,9 +615,11 @@ void BPTree::debugPrint()
 void BPTree::debugPrint(int id)
 {
     BPTreeNode* node = new BPTreeNode(fileName.c_str(), id, keyLength);
-    cout << "nodeSize =  " << node->getNodeSize() << endl;
+    cerr << "nodeSize =  " << node->getNodeSize() << endl;
     cerr << "Block id = " << id << ", isLeaf = " << node->isleaf() << endl;
     cerr << "Keys:";
+
+//    for (int i = 1; i <= (node->getNodeSize()>10? 10:node->getNodeSize()); i++)
     for (int i = 1; i <= node->getNodeSize(); i++)
     {
         if(i % 60 == 0)
@@ -580,12 +627,19 @@ void BPTree::debugPrint(int id)
             cerr << endl;
         }
         const char* k = node->getEntry(i).getKeyRawData();
-        cerr << Method::rawdata2int(k) << " - ";
+        cerr << (k) << " - ";
     }
     cerr << endl;
     cerr << "Pointers: ";
     for (int i = 0; i <= node->getNodeSize(); i++)
+    {
+        if(i % 30 == 0)
+        {
+            cerr << endl;
+        }
         cerr << " " << node->getEntry(i).getPointer();
+    }
+
     cerr << endl;
 
     if (!node->isleaf())

@@ -19,7 +19,7 @@ class IndexManager
     int remove(const string & index_name, const char * raw_data, int data_type)throw(Error);
 
     //done!
-    bool createIndex(const string & table_name, const string & attribute_name, const string &index_name, int data_type = -1, int posinRecord=-1, bool isBeginning = true);
+    bool createIndex(const string & table_name, const string & attribute_name, const string &index_name, int data_type = TYPE_INT, int posinRecord=-1, bool isBeginning = true);
     bool dropIndex(const string & index_name);
 
 

@@ -8,6 +8,15 @@
  * 
  */
 
+void Table::PrintTableHead() const
+{
+    for(auto AttriName : attri_name)
+    {
+        cout << AttriName << "\t";
+    }
+
+}
+
 /* 打印出rawdata的内容
  *
  */
@@ -249,6 +258,10 @@ void Table::print()
     {
         cout << attri.first << " ";
     }
+    for (auto indexName : Attri2Index)
+    {
+        cout << indexName.second->get_index_name() << " ";
+    }
 }
 /* ---------------------------------------------*/
 
@@ -266,6 +279,8 @@ bool Method::isEqual(const char *a, const char *b, const int length)
             isequal = false;
             break;
         }
+        if(a[i] == '\0' && b[i] == '\0')
+            break;
     }
     return isequal;
 }
@@ -362,7 +377,7 @@ void Method::createFile(const string &file_name, int record_length)
     FILE *file = fopen(Method::AbsolutePath(file_name).c_str(), "wb");
     if (file == nullptr)
     {
-        cout << "[Method::createFile] cannot open file '" << file_name << "' " << endl;
+        cout << "[Method::createFile] cannot create file '" << file_name << "' " << endl;
         return;
     }
 
@@ -559,6 +574,7 @@ bool Method::isSatisfy(const string & data, const int cond, const string & opera
             return false;
         }
     }
+    return true;
     
 }
 

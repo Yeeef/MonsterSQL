@@ -32,6 +32,7 @@
         "ratio": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "__functional_03": "cpp"
     }
 }

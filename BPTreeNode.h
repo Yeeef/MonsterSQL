@@ -12,13 +12,13 @@
 #include "BPTreeKey.h"
 using namespace std;
 #define BPInsert 1
-#define BPDeleteFail 3
+#define BPDeleteFail 0
 #define BPNormal 2
 #define BPDelete (-1)
 #define BPChange (-2)
 #define BPEmpty (-1)
 #define BPRepeat (-2)
-#define BPFind 1
+#define BPChangeEnd (-4)
 
 class BPTreeNode {
 public:
@@ -41,15 +41,17 @@ public:
     void mergeVec(vector<ptr>& res, int pos);
     void mergeVecRight(vector<ptr>& res, int pos);
     int borrow(BPTreeKey &entry, BPTreeNode *sibling, bool isLeftSib, BPTreeKey &parentKey);
-    void mergeRightNode(bool isLeftSib, BPTreeNode *sibling, BPTreeKey& parentKey, BPTreeKey& entry) ;
+    void mergeRightNode(bool isLeftSib, BPTreeNode *sibling, const BPTreeKey& parentKey, BPTreeKey& entry) ;
+    bool getRemoved(){return isRemoved;}
 
     //可否等到BPTree的时候再考虑？
     bool isoverflow() { return nodeSize > nodeCapability; }
-    bool isUnderflow() { return  nodeSize < ceil(nodeCapability / 2.0); }
+    bool isUnderflow(int rootID) ;
     int getUpperBound() {return (int)ceil(nodeCapability / 2.0);}
     BPTreeKey& getEntry(int pos);
     void setKey(int pos, BPTreeKey& entry);
     void setRemoved(){isRemoved = true;}
+    void setDirty(){isDirty = true;}
 
 
     //对叶节点得到下一个结点的ID

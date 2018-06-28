@@ -7,12 +7,14 @@ bool IndexManager::insert(const string & index_name, const char * raw_data, int 
     BPTreeKey entry(raw_data, recordID, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
 
-/*
-#if DEBUGINDEX
-    tree->debugPrint();
-#endif
-*/
-    int ret = tree->insertKey(entry);
+
+       int ret = tree->insertKey(entry);
+
+
+//    cerr << endl;
+//    cerr << "IndexManager::insert" << endl;
+//    tree->debugPrint();
+
     delete tree;
 
     if(ret  == BPRepeat)
@@ -26,13 +28,19 @@ bool IndexManager::insert(const string & index_name, const char * raw_data, int 
 }
 
 int IndexManager::find(const string &index_name, const char *raw_data, int data_type) {
-    BPTreeKey entry(raw_data, data_type);
+    BPTreeKey entry(raw_data, -1, data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
+#if DEBUGINDEX
+    tree->debugPrint();
+#endif
+
     int ret = tree->findKey(entry);
 
-//#if DEBUGINDEX
-//    tree->debugPrint();
-//#endif
+
+    //tree->debugPrint();
+#if DEBUGINDEX
+
+#endif
 
     delete tree;
     if(ret  == BPEmpty)
@@ -97,22 +105,30 @@ bool IndexManager::dropIndex(const string &index_name) {
 
 int IndexManager::remove(const string &index_name, const char *raw_data, int data_type)throw(Error) {
 
-    BPTreeKey entry(raw_data, data_type);
+    BPTreeKey entry(raw_data, -1 , data_type);
     BPTree* tree = new BPTree("index/" + index_name, data_type);
+
+//#if DEBUGINDEX
+//    tree->debugPrint(1);
+//#endif
+
+
     int recordPointer = 0;
     int* retPointer = &recordPointer;
     int ret = tree->removeKey(entry, retPointer);
+
+//#if DEBUGINDEX
+//    tree->debugPrint(1);
+//#endif
 
     delete tree;
 
     if(ret == BPDeleteFail)
     {
-        Error repeat("This key was existed in the Index Table!");
-        throw repeat;
+//        Error repeat("This key was existed in the Index Table!");
+//        throw repeat;
+        return -1;
     }
-
-    //todo
-    cout << recordPointer << endl;
 
     return recordPointer;
 }

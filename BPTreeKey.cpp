@@ -3,7 +3,7 @@
 //
 
 #include "BPTreeKey.h"
-#include <cmath>
+
 BPTreeKey::BPTreeKey(const char *raw_data, int pointerID, int dataType): dataType(dataType), pointerID(pointerID)
 {
     int keyLength = Method::getLengthFromType(dataType);
@@ -23,21 +23,21 @@ BPTreeKey::BPTreeKey(const char *raw_data, int pointerID, int dataType): dataTyp
     //rawData2key();
 
 
-BPTreeKey::BPTreeKey(const char *raw_data, int data_type) :dataType(data_type)
-{
-
-    pointerID = -1;
-    int keyLength = Method::getLengthFromType(dataType);
-    if(raw_data != nullptr)
-    {
-        rawData = new char[keyLength];
-        memcpy(rawData,raw_data, keyLength);
-    } else
-    {
-        rawData = nullptr;
-    }
-    //rawData2key();
-}
+//BPTreeKey::BPTreeKey(const char *raw_data, int data_type) :dataType(data_type)
+//{
+//
+//    pointerID = -1;
+//    int keyLength = Method::getLengthFromType(dataType);
+//    if(raw_data != nullptr)
+//    {
+//        rawData = new char[keyLength];
+//        memcpy(rawData,raw_data, keyLength);
+//    } else
+//    {
+//        rawData = nullptr;
+//    }
+//    //rawData2key();
+//}
 
 //void BPTreeKey::rawData2key() {
 //    if(dataType == TYPE_CHAR)
@@ -90,13 +90,23 @@ int BPTreeKey::compareKey(const BPTreeKey &thatkey) {
 
 
             //对char默认字典序，怎么写？
-        case TYPE_CHAR:
-        {
-            return strncmp(thatkey.rawData, rawData, Method::getLengthFromType(dataType));
-        }
-
         default:
-            return 0;
+        {
+            if(thatkey.getKeyRawData() == nullptr && this->rawData == nullptr)
+                return 0;
+            else
+            {
+                int keyLength = Method::getLengthFromType(dataType);
+                string thisKeydata,thatkeydata;
+                Method::rawdata2string(thatkey.getKeyRawData(),keyLength, thisKeydata);
+                Method::rawdata2string(this->getKeyRawData(), keyLength, thatkeydata);
+                if(thisKeydata == thatkeydata)
+                    return 0;
+                else if(thisKeydata < thatkeydata)
+                    return 1;
+                else return -1;
+            }
+        }
     }
 }
 
@@ -153,7 +163,14 @@ BPTreeKey& BPTreeKey::operator=(const BPTreeKey &entry) {
      *
      */
     assert(entry.dataType == this->dataType);
-    memcpy(rawData,entry.getKeyRawData(), Method::getLengthFromType(dataType));
+    int keyLength = Method::getLengthFromType(dataType);
+    if(entry.rawData == nullptr)
+        rawData = nullptr;
+    else if(rawData == nullptr)
+    {
+        rawData = new char[keyLength];
+    }
+    memcpy(rawData,entry.getKeyRawData(), keyLength);
     this->pointerID = entry.pointerID;
     return *this;
 }
