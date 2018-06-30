@@ -1,0 +1,3 @@
+/Users/yee/Desktop/monster-sql/MiniSQL/project/code/cmake/CMakeFiles/rebuild_cache.dir
+/Users/yee/Desktop/monster-sql/MiniSQL/project/code/cmake/CMakeFiles/edit_cache.dir
+/Users/yee/Desktop/monster-sql/MiniSQL/project/code/cmake/CMakeFiles/monsterSQL.dir
