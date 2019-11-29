@@ -206,12 +206,13 @@ class Table
     unordered_map <string, Attribute> Name2Attri; //名字索引到属性
     unordered_map <string, int > Name2Pos; // 名字索引一个相对起始地址
     //下面的index*不需要我来delete，上一步已经填好
-    unordered_map <string, Index*> Attri2Index; //属性名索引到Index名
+   
     unordered_set <string> UniqueAttri;
     string primary_name; 
     vector <short> typeVec; //这个必须有，用于做类型检查
     
     public:
+     unordered_map <string, Index*> Attri2Index; //属性名索引到Index名
     vector <string> attri_name; //这个也必须有，反映了attribute的排序
 
     // 专门为metadata准备的

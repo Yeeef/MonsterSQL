@@ -133,14 +133,13 @@ bool API::insert(const string &table_name, const vector<string> &insert_data, co
                     string duplicate;
                     if (table->CheckConsistency(ExistData, rawdata, duplicate) == false)
                     {
-                        cout << "[API::insert] duplicate record on '" + duplicate +"' ";
+                        cout << "[API::insert] duplicate record on '" + duplicate + "' ";
                         for (auto raw : raw_Vec)
                         {
                             delete[] raw;
                         }
                         delete[] rawdata; //？
                         return false;
-
                     }
                 }
             }
@@ -217,21 +216,39 @@ int API::Delete(const string &table_name, const vector<string> &attribute_name,
             char keydata[attri.get_length()];
             // 比如 a > 1，我现在要把这个1翻译出来
             Method::string2rawdata(operand.at(i), attri.get_type(), keydata);
-            cout << Method::rawdata2float(keydata) << endl;
+
             //找到绝对地址
-            int addr = indexmanager.remove(index_name, keydata, attri.get_type());
+            //int addr = indexmanager.remove(index_name, keydata, attri.get_type());
+            int addr = indexmanager.find(index_name, keydata, attri.get_type());
             if (addr == -1)
             {
                 return 0;
             }
             //调用record manager
             const char *rawdata = recordmanager.GetRecordByAddr(table_name, addr);
+
             // 判断是否符合所有要求, 如果满足要求，直接删除
             if (table->isSatisfyAllCondition(rawdata, attribute_name, condition, operand) == true)
             {
+                // 更新所有索引
+                for (auto attribute_index : table->Attri2Index)
+                {
+                    Attribute attri("", -1, 0);
+                    table->GetAttriByName(attribute_index.first, attri);
+                    int startPos = table->GetPosByName(attribute_index.first);
+                    int addr = indexmanager.remove(attribute_index.second->get_index_name(),
+                                                   rawdata + startPos, attri.get_type());
+
+                    if (addr == -1)
+                    {
+                        cout << "something wrong" << endl;;
+                    }
+                }
+
                 recordmanager.DeleteRecordByAddr(table_name, addr);
                 return 1;
             }
+
             return 0;
         }
 
@@ -331,7 +348,7 @@ bool API::create_index(const string &table_name, const string &attribute_name,
     try
     {
         CatalogManager &catalogmanager = MiniSQL::get_catalog_manager();
-        const Table * table = catalogmanager.get_table(table_name);
+        const Table *table = catalogmanager.get_table(table_name);
         int startPos = table->GetPosByName(attribute_name);
         Attribute attri("", 0, 0);
         table->GetAttriByName(attribute_name, attri);
