@@ -1,2 +1,6 @@
 *.DS_Store
-
+project/DB_data/data/
+project/DB_data/index/
+project/DB_data/IndexMeta/
+project/DB_data/TableMeta/
+project/DB_data/test/
