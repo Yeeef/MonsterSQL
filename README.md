@@ -1,36 +1,38 @@
 # Monster SQL 👹
 
-## 小组成员及分工
+## contributors
 
-- 王丹尧: Interpreter 模块
+- [ahaWDY](https://github.com/ahaWDY): Interpreter module
 
-- 熊苗: IndexManager 模块
+- [Emma0120](https://github.com/Emma0120): IndexManager module
 
-- 李易非: API, CatalogManager, RecordManager, BufferManager 模块
+- [Yeeef](https://github.com/Yeeef): API, CatalogManager, RecordManager, BufferManager module
 
 ## 文件夹结构
 
+```
 =======================================================
 
 MiniSQL
 |
 |
 +---doc
-|    +--- 小组总体报告.pdf
+|    +--- report.pdf
 |    |
-|	 +--- 分块报告
+|	 +--- report by each partner
 |
 |
 +---project
-	   +--- code: 包含项目所有代码
+	   +--- code: all codes
 	   |
 	   |
-	   +--- DB_data: 数据库所有数据文件
+	   +--- DB_data: files in database
 	   		   |
-	   		   |--- IndexMeta: 索引元信息
-	   		   |--- TableMeta: 表元信息
-	   		   |--- index:     索引文件
-	   		   |--- data:      数据文件
-	   		   |--- test:      测试文件
+	   		   |--- IndexMeta: Index Meta Data
+	   		   |--- TableMeta: Table Meta Data
+	   		   |--- index:     Index Data
+	   		   |--- data:      Data
+	   		   |--- test:      Test cases
 	   	
 =======================================================
+```
