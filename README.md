@@ -8,7 +8,7 @@
 
 - [Yeeef](https://github.com/Yeeef): API, CatalogManager, RecordManager, BufferManager module
 
-## 文件夹结构
+## folder organization
 
 ```
 =======================================================
